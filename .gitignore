@@ -1,0 +1,19 @@
+# Run artifacts
+__pycache__/
+*.py[cod]
+
+# Data
+data/
+!data/.keep
+
+# Notebooks
+*.ipynb
+.ipynb_checkpoints
+
+
+# Test artifacts
+.coverage
+
+# IDE Configuration
+.idea
+.vscode
