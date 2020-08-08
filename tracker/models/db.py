@@ -1,7 +1,7 @@
 import logging
 import threading
 from contextlib import contextmanager
-from typing import Optional, List
+from typing import Optional, List, Type
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Query, Session
@@ -48,19 +48,15 @@ class DB:
             session.close()
 
     @staticmethod
-    def __save(session: Session, obj: Model) -> Model:
+    def save(session: Session, obj: Model) -> Model:
         session.add(obj)
         session.commit()
         return obj
 
-    def save(self, obj: Model):
-        with self.session() as session:
-            return self.__save(session=session, obj=obj)
-
+    @staticmethod
     def __query(
-        self,
         session: Session,
-        model: Model,
+        model: Type[Model],
         filters: Optional[list] = None,
         sort_key: Optional = None,
         sort_order: Sort = Sort.ascending,
@@ -86,44 +82,52 @@ class DB:
 
         return query
 
-    def get_by_id(self, model, obj_id: Optional[str]) -> Optional[Model]:
+    @staticmethod
+    def get_by_id(
+        session: Session, model: Type[Model], obj_id: Optional[str]
+    ) -> Optional[Model]:
         """Get object by id.
 
         Args:
+            session: SQLAlchemy session.
             model: Model class to query.
             obj_id: ID of the object.
         """
         if obj_id is None:
             return None
 
-        with self.session() as session:
-            return session.query(model).get(obj_id)
+        return session.query(model).get(obj_id)
 
-    def get_by_ids(self, model, obj_ids: List[str]) -> List[Model]:
+    @classmethod
+    def get_by_ids(
+        cls, session: Session, model: Type[Model], obj_ids: List[str]
+    ) -> List[Model]:
         """Bulk get by ids.
 
         Args:
+            session: SQLAlchemy session.
             model: Model class to query.
             obj_ids: List of object ids to search for.
         """
-        with self.session() as session:
-            return [
-                obj
-                for obj in self.__query(
-                    session=session,
-                    model=model,
-                    filters=[
-                        model.id.in_(
-                            # Filter out the None ids
-                            [oid for oid in obj_ids if oid is not None]
-                        )
-                    ],
-                )
-            ]
+        return [
+            obj
+            for obj in cls.__query(
+                session=session,
+                model=model,
+                filters=[
+                    model.id.in_(
+                        # Filter out the None ids
+                        [oid for oid in obj_ids if oid is not None]
+                    )
+                ],
+            )
+        ]
 
+    @classmethod
     def first(
-        self,
-        model,
+        cls,
+        session: Session,
+        model: Type[Model],
         filters: Optional[list] = None,
         sort_key: Optional = None,
         sort_order: Sort = Sort.ascending,
@@ -131,47 +135,51 @@ class DB:
         """Get the first element.
 
         Args:
+            session: SQLAlchemy session.
             model: Model class to query.
             filters: Other statements to filter on.
             sort_key: Sorting field.
             sort_order: Sort order.
         """
-        with self.session() as session:
-            return self.__query(
-                session=session,
-                model=model,
-                filters=filters,
-                sort_key=sort_key,
-                sort_order=sort_order,
-            ).first()
+        return cls.__query(
+            session=session,
+            model=model,
+            filters=filters,
+            sort_key=sort_key,
+            sort_order=sort_order,
+        ).first()
 
+    @classmethod
     def all(
-        self,
-        model,
+        cls,
+        session: Session,
+        model: Type[Model],
         sort_key: Optional = None,
         sort_order: Sort = Sort.ascending,
     ) -> List[Model]:
         """Return all objects.
 
         Args:
+            session: SQLAlchemy session.
             model: Model class to query.
             sort_key: Sorting field.
             sort_order: Sort order.
         """
-        with self.session() as session:
-            return [
-                obj
-                for obj in self.__query(
-                    session=session,
-                    model=model,
-                    sort_key=sort_key,
-                    sort_order=sort_order,
-                )
-            ]
+        return [
+            obj
+            for obj in cls.__query(
+                session=session,
+                model=model,
+                sort_key=sort_key,
+                sort_order=sort_order,
+            )
+        ]
 
+    @classmethod
     def filter(
-        self,
-        model,
+        cls,
+        session: Session,
+        model: Type[Model],
         filters: Optional[list] = None,
         sort_key: Optional = None,
         sort_order: Sort = Sort.ascending,
@@ -179,58 +187,65 @@ class DB:
         """Filter objects.
 
         Args:
+            session: SQLAlchemy session.
             model: Model class to query.
             filters: Other statements to filter on.
             sort_key: Sorting field.
             sort_order: Sort order.
         """
-        with self.session() as session:
-            return [
-                obj
-                for obj in self.__query(
-                    session=session,
-                    model=model,
-                    filters=filters,
-                    sort_key=sort_key,
-                    sort_order=sort_order,
-                )
-            ]
+        return [
+            obj
+            for obj in cls.__query(
+                session=session,
+                model=model,
+                filters=filters,
+                sort_key=sort_key,
+                sort_order=sort_order,
+            )
+        ]
 
-    def delete(self, obj: Model) -> bool:
+    @staticmethod
+    def delete(session: Session, obj: Model) -> bool:
         """Delete an object by id.
 
         Args:
+            session: SQLAlchemy session.
             obj: Object to delete.
 
         Returns:
             bool: True if the operation is successful, False otherwise.
         """
-        with self.session() as session:
-            try:
-                session.query(obj.__class__).filter(
-                    obj.__class__.id == obj.id
-                ).delete()
-                return True
-            except Exception as e:
-                logger.error(
-                    "Failed to delete %s with id=%s. Error: %s",
-                    obj.__class__.__name__,
-                    obj.id,
-                    e,
-                )
-                return False
+        try:
+            session.query(obj.__class__).filter(
+                obj.__class__.id == obj.id
+            ).delete()
+            return True
+        except Exception as e:
+            logger.error(
+                "Failed to delete %s with id=%s. Error: %s",
+                obj.__class__.__name__,
+                obj.id,
+                e,
+            )
+            return False
 
-    def count(self, model, filters: Optional[list] = None) -> int:
+    @classmethod
+    def count(
+        cls,
+        session: Session,
+        model: Type[Model],
+        filters: Optional[list] = None,
+    ) -> int:
         """Count objects.
 
         Args:
+            session: SQLAlchemy session.
             model: Model class to query.
             filters: Other statements to filter on.
         """
-        with self.session() as session:
-            return self.__query(
-                session=session, model=model, filters=filters
-            ).count()
+        return cls.__query(
+            session=session, model=model, filters=filters
+        ).count()
 
 
 db = DB()

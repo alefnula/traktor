@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 import typer
 
@@ -12,9 +13,19 @@ def revision(name: str):
 
 
 @app.command()
-def migrate(revision: str = "head"):
+def migrate(revision: str = typer.Argument(default="head")):
     """Run migrations."""
-    os.system(f"alembic upgrade {revision}")
+    if revision == "head":
+        direction = "upgrade"
+    else:
+        destination = int(revision, 10)
+        current = int(subprocess.check_output(["alembic", "current"])[:4], 10)
+        if destination > current:
+            direction = "upgrade"
+        else:
+            direction = "downgrade"
+
+    os.system(f"alembic {direction} {revision}")
 
 
 @app.command()

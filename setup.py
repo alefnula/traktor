@@ -33,6 +33,6 @@ setup(
     install_requires=io.open("requirements.txt").read().splitlines(),
     entry_points="""
         [console_scripts]
-        tracker=tracker.__main__:app
+        tracker=tracker.commands:app
     """,
 )

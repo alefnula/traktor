@@ -1,10 +1,4 @@
-import typer
-
-from tracker.commands import db
-
-app = typer.Typer()
-app.add_typer(db.app)
-
+from tracker.commands import app
 
 if __name__ == "__main__":
     app()
