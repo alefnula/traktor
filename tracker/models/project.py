@@ -5,7 +5,7 @@ from tracker.models.model import Colored
 
 
 class Project(Colored):
-    HEADERS = Colored.HEADERS + ["name", "color"]
+    HEADERS = Colored.HEADERS + [("Name", "name"), ("Color", "rich_color")]
 
     __tablename__ = "project"
 
@@ -13,10 +13,18 @@ class Project(Colored):
 
     # Relationships
     tasks = orm.relationship(
-        "Task", backref="project", order_by="asc(Task.name)"
+        "Task",
+        backref="project",
+        order_by="asc(Task.name)",
+        cascade="all, delete",
+        passive_deletes=True,
     )
     entries = orm.relationship(
-        "Entry", backref="project", order_by="asc(Entry.start_time)"
+        "Entry",
+        backref="project",
+        order_by="asc(Entry.start_time)",
+        cascade="all, delete",
+        passive_deletes=True,
     )
 
     def __str__(self):

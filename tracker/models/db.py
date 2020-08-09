@@ -3,14 +3,24 @@ import threading
 from contextlib import contextmanager
 from typing import Optional, List, Type
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Query, Session
+import sqlalchemy as sa
+from sqlalchemy import orm
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
+from tracker import errors
 from tracker.config import config
 from tracker.models.enums import Sort
 from tracker.models.model import Model
 
 logger = logging.getLogger(__name__)
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 class DB:
@@ -24,18 +34,18 @@ class DB:
     def engine(self):
         with self.db_lock:
             if self.__engine is None:
-                self.__engine = create_engine(
+                self.__engine = sa.create_engine(
                     config.db_url, connect_args={"check_same_thread": False}
                 )
         return self.__engine
 
     @contextmanager
-    def session(self) -> Session:
+    def session(self) -> orm.Session:
         """Create SQL Alchemy db session."""
         engine = self.engine
         with self.db_lock:
             if self.__session_class is None:
-                self.__session_class = sessionmaker(bind=engine)
+                self.__session_class = orm.sessionmaker(bind=engine)
 
         session = self.__session_class()
         try:
@@ -48,19 +58,19 @@ class DB:
             session.close()
 
     @staticmethod
-    def save(session: Session, obj: Model) -> Model:
+    def save(session: orm.Session, obj: Model) -> Model:
         session.add(obj)
         session.commit()
         return obj
 
     @staticmethod
     def __query(
-        session: Session,
+        session: orm.Session,
         model: Type[Model],
         filters: Optional[list] = None,
         sort_key: Optional = None,
         sort_order: Sort = Sort.ascending,
-    ) -> Query:
+    ) -> orm.Query:
         """Return a filtered and sorted query object.
 
         Args:
@@ -84,7 +94,7 @@ class DB:
 
     @staticmethod
     def get_by_id(
-        session: Session, model: Type[Model], obj_id: Optional[str]
+        session: orm.Session, model: Type[Model], obj_id: Optional[str]
     ) -> Optional[Model]:
         """Get object by id.
 
@@ -100,7 +110,7 @@ class DB:
 
     @classmethod
     def get_by_ids(
-        cls, session: Session, model: Type[Model], obj_ids: List[str]
+        cls, session: orm.Session, model: Type[Model], obj_ids: List[str]
     ) -> List[Model]:
         """Bulk get by ids.
 
@@ -126,7 +136,7 @@ class DB:
     @classmethod
     def first(
         cls,
-        session: Session,
+        session: orm.Session,
         model: Type[Model],
         filters: Optional[list] = None,
         sort_key: Optional = None,
@@ -150,9 +160,28 @@ class DB:
         ).first()
 
     @classmethod
+    def get(
+        cls, session: orm.Session, model: Type[Model], filters: list
+    ) -> Model:
+        """Get a specific element or raise an error.
+
+        Args:
+            session: SQLAlchemy session.
+            model: Model class to query.
+            filters: List of filter expressions.
+
+        Raises:
+            errors.ObjectNotFound: If the object is not found.
+        """
+        obj = cls.first(session=session, model=model, filters=filters)
+        if obj is None:
+            raise errors.ObjectNotFound(model=model, query={})
+        return obj
+
+    @classmethod
     def all(
         cls,
-        session: Session,
+        session: orm.Session,
         model: Type[Model],
         sort_key: Optional = None,
         sort_order: Sort = Sort.ascending,
@@ -178,7 +207,7 @@ class DB:
     @classmethod
     def filter(
         cls,
-        session: Session,
+        session: orm.Session,
         model: Type[Model],
         filters: Optional[list] = None,
         sort_key: Optional = None,
@@ -205,7 +234,7 @@ class DB:
         ]
 
     @staticmethod
-    def delete(session: Session, obj: Model) -> bool:
+    def delete(session: orm.Session, obj: Model) -> bool:
         """Delete an object by id.
 
         Args:
@@ -232,7 +261,7 @@ class DB:
     @classmethod
     def count(
         cls,
-        session: Session,
+        session: orm.Session,
         model: Type[Model],
         filters: Optional[list] = None,
     ) -> int:

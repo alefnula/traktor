@@ -10,6 +10,12 @@ from tracker.models.project import Project
 
 
 class Task(Colored):
+    HEADERS = Colored.HEADERS + [
+        ("Project", "project.name"),
+        ("Name", "name"),
+        ("Color", "rich_color"),
+    ]
+
     __tablename__ = "task"
     _table_args__ = (
         sa.UniqueConstraint(
@@ -19,12 +25,18 @@ class Task(Colored):
         ),
     )
 
-    project_id = sa.Column(sa.String(36), sa.ForeignKey("project.id"))
+    project_id = sa.Column(
+        sa.String(36), sa.ForeignKey("project.id", ondelete="CASCADE")
+    )
     name = sa.Column(sa.String(127), nullable=False)
 
     # Relationships
     entries = orm.relationship(
-        "Entry", backref="tasks", order_by="asc(Entry.start_time)"
+        "Entry",
+        backref="task",
+        order_by="asc(Entry.start_time)",
+        cascade="all, delete",
+        passive_deletes=True,
     )
 
     @classmethod

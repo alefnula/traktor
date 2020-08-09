@@ -2,7 +2,7 @@
 
 Revision ID: 0001
 Revises: 0000
-Create Date: 2020-08-08 20:13:35.388304
+Create Date: 2020-08-09 00:42:40.020704
 
 """
 from alembic import op
@@ -46,7 +46,9 @@ def upgrade():
         sa.Column("color_hex", sa.String(length=7), nullable=False),
         sa.Column("project_id", sa.String(length=36), nullable=True),
         sa.Column("name", sa.String(length=127), nullable=False),
-        sa.ForeignKeyConstraint(["project_id"], ["project.id"],),
+        sa.ForeignKeyConstraint(
+            ["project_id"], ["project.id"], ondelete="CASCADE"
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
@@ -61,16 +63,20 @@ def upgrade():
         sa.Column("start_time", sa.DateTime(), nullable=False),
         sa.Column("end_time", sa.DateTime(), nullable=True),
         sa.Column("duration", sa.BigInteger(), nullable=False),
-        sa.ForeignKeyConstraint(["project_id"], ["project.id"],),
-        sa.ForeignKeyConstraint(["task_id"], ["task.id"],),
+        sa.ForeignKeyConstraint(
+            ["project_id"], ["project.id"], ondelete="CASCADE"
+        ),
+        sa.ForeignKeyConstraint(["task_id"], ["task.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
         "entry_tag",
         sa.Column("entry_id", sa.String(length=36), nullable=True),
         sa.Column("tag_id", sa.String(length=36), nullable=True),
-        sa.ForeignKeyConstraint(["entry_id"], ["entry.id"],),
-        sa.ForeignKeyConstraint(["tag_id"], ["tag.id"],),
+        sa.ForeignKeyConstraint(
+            ["entry_id"], ["entry.id"], ondelete="CASCADE"
+        ),
+        sa.ForeignKeyConstraint(["tag_id"], ["tag.id"], ondelete="CASCADE"),
     )
     # ### end Alembic commands ###
 

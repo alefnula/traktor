@@ -4,32 +4,32 @@ import typer
 
 from tracker.output import output
 from tracker.engine import engine
-from tracker.models import db, RGB, Project
+from tracker.models import db, RGB, Tag
 from tracker.decorators import error_handler
 
 
-app = typer.Typer(name="project", help="Project commands.")
+app = typer.Typer(name="tag", help="Tag commands.")
 
 
 @app.command()
 @error_handler
 def list():
-    """List all projects."""
+    """List all tags."""
     with db.session() as session:
-        output(model=Project, objs=engine.project_list(session=session))
+        output(model=Tag, objs=engine.tag_list(session=session))
 
 
 @app.command()
 @error_handler
 def create(name: str, color: Optional[str] = None):
-    """Create a project."""
+    """Create a tag."""
     if color is not None:
         color = RGB.parse(color)
 
     with db.session() as session:
         output(
-            model=Project,
-            objs=engine.project_get_or_create(
+            model=Tag,
+            objs=engine.tag_get_or_create(
                 session=session, name=name, color=color
             ),
         )
@@ -38,11 +38,11 @@ def create(name: str, color: Optional[str] = None):
 @app.command()
 @error_handler
 def rename(name: str, new_name: str):
-    """Rename a project."""
+    """Rename a tag."""
     with db.session() as session:
         output(
-            model=Project,
-            objs=engine.project_rename(
+            model=Tag,
+            objs=engine.tag_rename(
                 session=session, name=name, new_name=new_name
             ),
         )
@@ -51,7 +51,7 @@ def rename(name: str, new_name: str):
 @app.command()
 @error_handler
 def delete(name: str):
-    """Delete a project."""
+    """Delete a tag."""
     with db.session() as session:
-        project = engine.project_get(session=session, name=name)
-        engine.project_delete(session=session, project=project)
+        tag = engine.tag_get(session=session, name=name)
+        engine.tag_delete(session=session, tag=tag)

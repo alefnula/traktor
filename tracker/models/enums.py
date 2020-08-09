@@ -37,6 +37,10 @@ class RGB:
     def hex(self):
         return f"#{self.r:02x}{self.g:02x}{self.b:02x}"
 
+    @property
+    def rich(self):
+        return f"rgb({self.r},{self.g},{self.b})"
+
     @classmethod
     def parse(cls, color: str) -> "RGB":
         if (

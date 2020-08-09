@@ -8,6 +8,7 @@ __all__ = [
     "Task",
     "Tag",
     "Entry",
+    "Report",
 ]
 
 from tracker.models.db import db
@@ -17,3 +18,4 @@ from tracker.models.project import Project
 from tracker.models.task import Task
 from tracker.models.tag import Tag
 from tracker.models.entry import Entry
+from tracker.models.report import Report
