@@ -8,10 +8,10 @@ from sqlalchemy import orm
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-from tracker import errors
-from tracker.config import config
-from tracker.models.enums import Sort
-from tracker.models.model import Model
+from traktor import errors
+from traktor.config import config
+from traktor.models.enums import Sort
+from traktor.models.model import Model
 
 logger = logging.getLogger(__name__)
 

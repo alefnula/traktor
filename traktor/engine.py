@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import orm
 
-from tracker import errors
-from tracker.timestamp import utcnow, make_aware
-from tracker.models import db, RGB, Project, Task, Tag, Entry, Report
+from traktor import errors
+from traktor.timestamp import utcnow, make_aware
+from traktor.models import db, RGB, Project, Task, Tag, Entry, Report
 
 
 class Engine:

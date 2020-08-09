@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 
-from tracker.models.model import Base
+from traktor.models.model import Base
 
 entry_tag_table = sa.Table(
     "entry_tag",

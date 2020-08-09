@@ -9,8 +9,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 
-from tracker.models import Base
-from tracker.config import config as tracker_config
+from traktor.models import Base
+from traktor.config import config as traktor_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -44,7 +44,7 @@ def run_migrations_offline():
 
     """
     context.configure(
-        url=tracker_config.db_url,
+        url=traktor_config.db_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -62,7 +62,7 @@ def run_migrations_online():
 
     """
     ctx = config.get_section(config.config_ini_section)
-    ctx["sqlalchemy.url"] = tracker_config.db_url
+    ctx["sqlalchemy.url"] = traktor_config.db_url
 
     connectable = engine_from_config(
         ctx, prefix="sqlalchemy.", poolclass=pool.NullPool,

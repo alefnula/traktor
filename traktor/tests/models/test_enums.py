@@ -1,6 +1,6 @@
 import pytest
 
-from tracker.models.enums import RGB
+from traktor.models.enums import RGB
 
 
 def test_rgb_creation_type():

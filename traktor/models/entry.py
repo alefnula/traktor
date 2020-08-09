@@ -4,10 +4,10 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from tracker.config import config
-from tracker import timestamp as ts
-from tracker.models.model import Model
-from tracker.models.entry_tag import entry_tag_table
+from traktor.config import config
+from traktor import timestamp as ts
+from traktor.models.model import Model
+from traktor.models.entry_tag import entry_tag_table
 
 
 class Entry(Model):

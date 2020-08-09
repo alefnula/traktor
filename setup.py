@@ -9,7 +9,7 @@ author_email = "alefnula@gmail.com"
 
 def get_version():
     """Import the version module and get the project version from it."""
-    version_py = Path(__file__).parent / "tracker" / "version.py"
+    version_py = Path(__file__).parent / "traktor" / "version.py"
     spec = importlib.util.spec_from_file_location("version", version_py)
     version = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(version)
@@ -17,7 +17,7 @@ def get_version():
 
 
 setup(
-    name="tracker",
+    name="traktor",
     version=get_version(),
     author=author,
     author_email=author_email,
@@ -26,13 +26,13 @@ setup(
     description="Python command line application for tracking time.",
     long_description=io.open("README.md", "r", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/alefnula/tracker",
+    url="https://github.com/alefnula/traktor",
     platforms=["Windows", "POSIX", "MacOSX"],
     license="Apache-2.0",
     packages=find_packages(),
     install_requires=io.open("requirements.txt").read().splitlines(),
     entry_points="""
         [console_scripts]
-        tracker=tracker.commands:app
+        traktor=traktor.commands:app
     """,
 )

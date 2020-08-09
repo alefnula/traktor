@@ -29,7 +29,7 @@
       language: python
       entry: flake8
       args:
-        - tracker
+        - traktor
 
 - repo: https://github.com/pycqa/pydocstyle
   rev: master
@@ -39,4 +39,4 @@
       language: python
       entry: pydocstyle
       args:
-        - tracker
+        - traktor

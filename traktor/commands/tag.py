@@ -2,10 +2,10 @@ from typing import Optional
 
 import typer
 
-from tracker.output import output
-from tracker.engine import engine
-from tracker.models import db, RGB, Tag
-from tracker.decorators import error_handler
+from traktor.output import output
+from traktor.engine import engine
+from traktor.models import db, RGB, Tag
+from traktor.decorators import error_handler
 
 
 app = typer.Typer(name="tag", help="Tag commands.")

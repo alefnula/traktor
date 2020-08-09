@@ -2,17 +2,17 @@ from pathlib import Path
 
 import typer
 
-from tracker import errors
-from tracker.engine import engine
-from tracker.output import output
-from tracker.config import Format, config
-from tracker.models import db, Entry, Report
-from tracker.decorators import error_handler
-from tracker.commands.db import app as db_app
-from tracker.commands.config import app as config_app
-from tracker.commands.project import app as project_app
-from tracker.commands.task import app as task_app
-from tracker.commands.tag import app as tag_app
+from traktor import errors
+from traktor.engine import engine
+from traktor.output import output
+from traktor.config import Format, config
+from traktor.models import db, Entry, Report
+from traktor.decorators import error_handler
+from traktor.commands.db import app as db_app
+from traktor.commands.config import app as config_app
+from traktor.commands.project import app as project_app
+from traktor.commands.task import app as task_app
+from traktor.commands.tag import app as tag_app
 
 
 app = typer.Typer()
@@ -35,7 +35,6 @@ def callback(
         readable=True,
         resolve_path=True,
     ),
-    profile: str = typer.Option(None, help="Configuration profile."),
     fmt: Format = typer.Option(
         default=config.format.value, help="Output format"
     ),
@@ -52,8 +51,6 @@ def callback(
 ):
     if config_path is not None:
         config.config_path = config_path
-    if profile is not None:
-        config.profile = profile
 
     config.load()
 
@@ -124,8 +121,8 @@ def shell():
     """Run IPython shell with loaded configuration and models."""
     try:
         from IPython import embed
-        from tracker.config import config
-        from tracker.models import db, Sort, RGB, Project, Task, Tag, Entry
+        from traktor.config import config
+        from traktor.models import db, Sort, RGB, Project, Task, Tag, Entry
 
         embed(
             user_ns={

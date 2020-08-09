@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from tracker.models.model import Colored
+from traktor.models.model import Colored
 
 
 class Project(Colored):

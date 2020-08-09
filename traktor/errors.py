@@ -1,7 +1,7 @@
 from typing import Type
 
 
-class TrackerError(Exception):
+class TraktorError(Exception):
     def __init__(self, message: str):
         self.message = message
 
@@ -15,7 +15,7 @@ class TrackerError(Exception):
     __repr__ = __str__
 
 
-class ObjectNotFound(TrackerError):
+class ObjectNotFound(TraktorError):
     def __init__(self, model: Type, query: dict):
         """DeviceNotFound error.
 
@@ -39,7 +39,7 @@ class ObjectNotFound(TrackerError):
         )
 
 
-class TimerAlreadyRunning(TrackerError):
+class TimerAlreadyRunning(TraktorError):
     def __init__(self, timers: list):
         self.timers = timers
 

@@ -8,7 +8,7 @@ import pytz
 import tzlocal
 
 
-class Format(enum.Enum):
+class Format(str, enum.Enum):
     text = "text"
     json = "json"
 
@@ -18,18 +18,16 @@ class Config:
 
     def __init__(self):
         # Path to the configuration file
-        self.config_path = (
-            Path("~").expanduser() / ".tracker" / "tracker.ini"
-        ).absolute()
-        self.profile = "default"
+        self.config_dir = (Path("~").expanduser() / ".traktor").absolute()
+        self.config_path = self.config_dir / "traktor.ini"
+        self.db_path = f"{self.config_dir}/traktor.db"
 
         # Directory structure
         self.project_dir = Path(__file__).parent.parent.absolute()
-        self.data_dir = self.project_dir / "data"
-        self.app_dir = self.project_dir / "tracker"
+        self.app_dir = self.project_dir / "traktor"
 
         self.format: Format = Format.text
-        self.db_path = f"{self.data_dir}/tracker.db"
+
         self.timezone = tzlocal.get_localzone()
         # Load the values from configuration
         self.load()
@@ -42,18 +40,18 @@ class Config:
         cp = ConfigParser()
         cp.read(self.config_path)
 
-        if cp.has_option(self.profile, "format"):
+        if cp.has_option("traktor", "format"):
             try:
-                self.format = Format(cp.get(self.profile, "format"))
+                self.format = Format(cp.get("traktor", "format"))
             except Exception:
                 pass
 
-        if cp.has_option(self.profile, "db_path"):
-            self.db_path = cp.get(self.profile, "db_path")
+        if cp.has_option("traktor", "db_path"):
+            self.db_path = cp.get("traktor", "db_path")
 
-        if cp.has_option(self.profile, "timezone"):
+        if cp.has_option("traktor", "timezone"):
             try:
-                self.timezone = pytz.timezone(cp.get(self.profile, "timezone"))
+                self.timezone = pytz.timezone(cp.get("traktor", "timezone"))
             except Exception:
                 pass
 
@@ -65,13 +63,13 @@ class Config:
         if os.path.isfile(self.config_path):
             cp.read(self.config_path)
 
-        if not cp.has_section(self.profile):
-            cp.add_section(self.profile)
+        if not cp.has_section("traktor"):
+            cp.add_section("traktor")
 
         # Set the values from configuration
-        cp.set(self.profile, "format", self.format.value)
-        cp.set(self.profile, "db_path", self.db_path)
-        cp.set(self.profile, "timezone", self.timezone.zone)
+        cp.set("traktor", "format", self.format.value)
+        cp.set("traktor", "db_path", self.db_path)
+        cp.set("traktor", "timezone", self.timezone.zone)
 
         with io.open(self.config_path, "w") as f:
             cp.write(f)

@@ -3,10 +3,10 @@ from typing import Optional
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from tracker.models.db import db
-from tracker.models.enums import RGB
-from tracker.models.model import Colored
-from tracker.models.project import Project
+from traktor.models.db import db
+from traktor.models.enums import RGB
+from traktor.models.model import Colored
+from traktor.models.project import Project
 
 
 class Task(Colored):

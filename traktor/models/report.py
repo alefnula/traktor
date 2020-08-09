@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from tracker.timestamp import humanize
+from traktor.timestamp import humanize
 
 
 @dataclass

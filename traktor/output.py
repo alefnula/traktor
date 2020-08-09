@@ -6,8 +6,8 @@ from rich.table import Table
 from rich.console import Console
 
 
-from tracker.config import config
-from tracker.models import Model, Report
+from traktor.config import config
+from traktor.models import Model, Report
 
 
 def get_path(obj, path):

@@ -1,7 +1,7 @@
 import pytz
 import typer
 
-from tracker.config import config, Format
+from traktor.config import config, Format
 
 app = typer.Typer(name="config", help="Configuration set/get.")
 

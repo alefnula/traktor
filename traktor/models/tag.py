@@ -1,8 +1,8 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from tracker.models.model import Colored
-from tracker.models.entry_tag import entry_tag_table
+from traktor.models.model import Colored
+from traktor.models.entry_tag import entry_tag_table
 
 
 class Tag(Colored):

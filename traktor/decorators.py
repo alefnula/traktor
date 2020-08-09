@@ -2,8 +2,7 @@ import functools
 
 import typer
 
-from tracker.output import output
-from tracker.errors import TrackerError
+from traktor.errors import TraktorError
 
 
 def error_handler(func):
@@ -11,9 +10,7 @@ def error_handler(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except TrackerError as e:
+        except TraktorError as e:
             typer.secho(e.message, fg=typer.colors.RED)
-            if e.rich is not None:
-                output(model=e.rich.model, objs=e.rich.objects)
 
     return wrapper
