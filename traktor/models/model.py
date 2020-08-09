@@ -100,11 +100,11 @@ class Colored(Model):
 
     def to_dict(self) -> dict:
         d = super().to_dict()
-        d["color"] = self.color.to_dict()
+        d["color"] = self.color_hex
         return d
 
     @classmethod
     def from_dict(cls, d: dict) -> "Colored":
         model = super().from_dict(d)
-        model.color = RGB.from_dict(d["color"])
+        model.color_hex = d["color"]
         return model

@@ -4,6 +4,7 @@
 
 - Fix broken json output.
 - List all tasks without specifying the project.
+- Database export to json file.
 
 
 ## v0.0.2 (August 09, 2020)

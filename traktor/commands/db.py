@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import typer
 
+from traktor.models import db
 from traktor.engine import engine
 
 
@@ -22,3 +25,10 @@ def migrate(revision: str = typer.Argument(default="head")):
 def reset():
     """Reset migrations - delete all tables."""
     engine.db_reset()
+
+
+@app.command()
+def export(path: Path):
+    """Export database to JSON document."""
+    with db.session() as session:
+        engine.export(session=session, path=path)

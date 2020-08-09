@@ -59,10 +59,13 @@ class ObjectNotFound(TraktorError):
 
 
 class TimerAlreadyRunning(TraktorError):
-    def __init__(self, timers: list):
-        self.timers = timers
+    def __init__(self, project: str, task: str):
+        self.project = project
+        self.task = task
 
-        super().__init__(message="Timer is already running.",)
+        super().__init__(
+            message=f"Timer is already running for {project}/{task}."
+        )
 
 
 class NoDefaultTask(TraktorError):

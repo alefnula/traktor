@@ -16,11 +16,13 @@ class TimerMixin(TaskMixin):
     @classmethod
     def start(cls, session: orm.Session, project: str, task: str) -> Entry:
         # First see if there are running timers
-        timers = DB.filter(
+        timer = DB.first(
             session=session, model=Entry, filters=[Entry.end_time.is_(None)]
         )
-        if len(timers) > 0:
-            raise errors.TimerAlreadyRunning(timers)
+        if timer is not None:
+            raise errors.TimerAlreadyRunning(
+                project=timer.project.name, task=timer.task.name
+            )
 
         if task is None:
             task = cls.task_get_default(session=session, project=project)
@@ -45,7 +47,7 @@ class TimerMixin(TaskMixin):
         return timers
 
     @staticmethod
-    def status(session: orm.Session):
+    def status(session: orm.Session) -> List[Entry]:
         return DB.filter(
             session=session, model=Entry, filters=[Entry.end_time.is_(None)]
         )
