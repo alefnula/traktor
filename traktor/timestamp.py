@@ -1,3 +1,4 @@
+from typing import Optional
 from datetime import datetime, timezone
 
 FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -13,13 +14,17 @@ def utcnow() -> datetime:
     return make_aware(datetime.utcnow())
 
 
-def dt_to_str(dt: datetime) -> str:
+def dt_to_str(dt: Optional[datetime]) -> Optional[str]:
     """Format datetime to string."""
+    if dt is None:
+        return None
     return dt.strftime(FORMAT)
 
 
-def str_to_dt(s: str) -> datetime:
+def str_to_dt(s: Optional[str]) -> Optional[datetime]:
     """Parse datetime string to tz aware UTC."""
+    if s is None:
+        return None
     return make_aware(datetime.strptime(s, FORMAT))
 
 

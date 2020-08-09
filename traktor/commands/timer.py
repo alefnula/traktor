@@ -2,7 +2,6 @@ from typing import Optional
 
 import typer
 
-from traktor import errors
 from traktor.engine import engine
 from traktor.output import output
 from traktor.decorators import error_handler
@@ -17,14 +16,10 @@ app = typer.Typer(name="timer", help="Start/stop timer and reports.")
 def start(project: str, task: Optional[str] = typer.Argument(None)):
     """Start the timer."""
     with db.session() as session:
-        try:
-            output(
-                model=Entry,
-                objs=engine.start(session=session, project=project, task=task),
-            )
-        except errors.TimerAlreadyRunning as e:
-            typer.secho(e.message, fg=typer.colors.RED)
-            output(model=Entry, objs=e.timers)
+        output(
+            model=Entry,
+            objs=engine.start(session=session, project=project, task=task),
+        )
 
 
 @app.command()

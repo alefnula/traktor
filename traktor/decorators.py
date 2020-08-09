@@ -1,7 +1,9 @@
+import json
 import functools
 
-import typer
+from rich import print
 
+from traktor.config import config
 from traktor.errors import TraktorError
 
 
@@ -11,6 +13,9 @@ def error_handler(func):
         try:
             return func(*args, **kwargs)
         except TraktorError as e:
-            typer.secho(e.message, fg=typer.colors.RED)
+            if config.format == config.Format.text:
+                print(f"[red]{e.message}[/red]")
+            elif config.format == config.Format.json:
+                print(json.dumps({"error": e.message}))
 
     return wrapper

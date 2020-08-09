@@ -17,7 +17,7 @@ app.callback()(engine.ensure_db)
 
 @app.command()
 @error_handler
-def list(project: str):
+def list(project: Optional[str] = typer.Argument(None)):
     """List all tasks."""
     with db.session() as session:
         output(

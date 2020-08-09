@@ -102,7 +102,9 @@ class Entry(Model):
         d.update(
             {
                 "project_id": self.project_id,
+                "project": self.project.name,
                 "task_id": self.task_id,
+                "task": self.task.name,
                 "description": self.description,
                 "notes": self.notes,
                 "start_time": ts.dt_to_str(self.start_time),

@@ -9,15 +9,19 @@ from traktor.engine.project_mixin import ProjectMixin
 
 class TaskMixin(ProjectMixin):
     @classmethod
-    def task_list(cls, session: orm.Session, project: str) -> List[Task]:
+    def task_list(
+        cls, session: orm.Session, project: Optional[str]
+    ) -> List[Task]:
         """List all tasks in a project.
 
         Args:
             session (orm.Session): SQLAlchemy session.
             project (str): Project name.
         """
-        project = cls.project_get(session=session, name=project)
+        if project is None:
+            return DB.all(session=session, model=Task)
 
+        project = cls.project_get(session=session, name=project)
         return DB.filter(
             session=session,
             model=Task,
