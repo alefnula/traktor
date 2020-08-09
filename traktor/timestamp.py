@@ -34,15 +34,15 @@ MINUTES = 60
 def humanize(duration: int) -> str:
     hours = duration // HOURS
 
-    result = ""
+    result = []
     if hours > 0:
-        result += f"{hours}"
+        result.append(f"{hours}h")
         duration = duration - (HOURS * hours)
 
     minutes = duration // MINUTES
     if minutes > 0 or hours > 0:
-        result += f"{minutes:02d}:"
+        result.append(f"{minutes:02d}m")
         duration = duration - (MINUTES * minutes)
 
-    result += f"{duration:02d}"
-    return result
+    result.append(f"{duration:02d}s")
+    return " ".join(result)

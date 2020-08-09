@@ -2,17 +2,13 @@ from pathlib import Path
 
 import typer
 
-from traktor import errors
-from traktor.engine import engine
-from traktor.output import output
 from traktor.config import Format, config
-from traktor.models import db, Entry, Report
-from traktor.decorators import error_handler
 from traktor.commands.db import app as db_app
 from traktor.commands.config import app as config_app
 from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
 from traktor.commands.tag import app as tag_app
+from traktor.commands.timer import app as timer_app
 
 
 app = typer.Typer()
@@ -21,6 +17,7 @@ app.add_typer(config_app)
 app.add_typer(project_app)
 app.add_typer(task_app)
 app.add_typer(tag_app)
+app.add_typer(timer_app)
 
 
 @app.callback()
@@ -35,13 +32,13 @@ def callback(
         readable=True,
         resolve_path=True,
     ),
-    fmt: Format = typer.Option(
+    format: Format = typer.Option(
         default=config.format.value, help="Output format"
     ),
     db_path: Path = typer.Option(
         default=config.db_path,
         help="Path to the database.",
-        exists=True,
+        exists=False,
         file_okay=True,
         dir_okay=False,
         writable=True,
@@ -54,66 +51,11 @@ def callback(
 
     config.load()
 
-    if config.format != fmt:
-        config.format = fmt
+    if config.format != format:
+        config.format = format
 
     if config.db_path != str(db_path.absolute()):
         config.db_path = str(db_path.absolute())
-
-
-@app.command()
-@error_handler
-def start(project: str, task: str):
-    """Start the timer."""
-    with db.session() as session:
-        try:
-            output(
-                model=Entry,
-                objs=engine.start(session=session, project=project, task=task),
-            )
-        except errors.TimerAlreadyRunning as e:
-            typer.secho(e.message, fg=typer.colors.RED)
-            output(model=Entry, objs=e.timers)
-
-
-@app.command()
-@error_handler
-def stop():
-    """Stop the timer."""
-    with db.session() as session:
-        output(
-            model=Entry, objs=engine.stop(session=session),
-        )
-
-
-@app.command()
-@error_handler
-def status():
-    """See the current running timer."""
-    with db.session() as session:
-        output(
-            model=Entry, objs=engine.status(session=session),
-        )
-
-
-@app.command()
-@error_handler
-def today():
-    """See today's timers."""
-    with db.session() as session:
-        output(
-            model=Report, objs=engine.today(session=session),
-        )
-
-
-@app.command()
-@error_handler
-def report(days: int = typer.Argument(default=365, min=1)):
-    """See the current running timer."""
-    with db.session() as session:
-        output(
-            model=Report, objs=engine.report(session=session, days=days),
-        )
 
 
 @app.command()

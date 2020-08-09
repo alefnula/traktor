@@ -6,17 +6,25 @@ from sqlalchemy import orm
 
 from traktor.config import config
 from traktor import timestamp as ts
-from traktor.models.model import Model
+from traktor.models.model import Model, Column
 from traktor.models.entry_tag import entry_tag_table
 
 
 class Entry(Model):
     HEADERS = Model.HEADERS + [
-        ("Project", "project.name"),
-        ("Task", "task.name"),
-        ("Start Time", "local_start_time"),
-        ("End time", "local_end_time"),
-        ("Duration", "running_time"),
+        Column(title="Project", path="project.name"),
+        Column(title="Task", path="task.name"),
+        Column(
+            title="Start Time",
+            path="local_start_time",
+            align=Column.Align.center,
+        ),
+        Column(
+            title="End Time", path="local_end_time", align=Column.Align.center
+        ),
+        Column(
+            title="Duration", path="running_time", align=Column.Align.center
+        ),
     ]
 
     __tablename__ = "entry"

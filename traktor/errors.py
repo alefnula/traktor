@@ -15,6 +15,25 @@ class TraktorError(Exception):
     __repr__ = __str__
 
 
+class InvalidConfiguration(TraktorError):
+    def __init__(
+        self, key: str = None, value: str = None, valid_values: str = None
+    ):
+        if key is not None and value is not None:
+            message = f"Invalid configuration key=`{key}` and value=`{value}`."
+        elif key is not None:
+            message = f"Invalid configuration key=`{key}`."
+        elif value is not None:
+            message = f"Invalid configuration value=`{value}`."
+        else:
+            message = "Invalid configuration."
+
+        if valid_values is not None:
+            message += f" Valid values: `{valid_values}`"
+
+        super().__init__(message=message)
+
+
 class ObjectNotFound(TraktorError):
     def __init__(self, model: Type, query: dict):
         """DeviceNotFound error.
@@ -44,3 +63,12 @@ class TimerAlreadyRunning(TraktorError):
         self.timers = timers
 
         super().__init__(message="Timer is already running.",)
+
+
+class NoDefaultTask(TraktorError):
+    def __init__(self, project: str):
+        self.project = project
+
+        super().__init__(
+            message=f"No default task found for project: {project}."
+        )

@@ -1,4 +1,4 @@
-.PHONY: help clean test check fmt
+.PHONY: help clean test check fmt build release
 .DEFAULT_GOAL := help
 PROJECT := traktor
 
@@ -24,3 +24,12 @@ check:               ## Run code checks.
 
 fmt:                 ## Format the code.
 	@black --safe --line-length=79 --target-version=py38 "$(PROJECT)"
+
+
+build:               ## Build the source and wheel distribution packages.
+	@python3 setup.py sdist bdist_wheel
+
+
+release: build       ## Build and upload the package to PyPI.
+	@twine upload --skip-existing  dist/*
+	@rm -fr build dist sotabenchapi.egg-info

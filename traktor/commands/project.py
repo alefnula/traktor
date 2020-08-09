@@ -11,6 +11,10 @@ from traktor.decorators import error_handler
 app = typer.Typer(name="project", help="Project commands.")
 
 
+# Make sure that the database exists and it's migrated to the latest version
+app.callback()(engine.ensure_db)
+
+
 @app.command()
 @error_handler
 def list():
@@ -21,7 +25,7 @@ def list():
 
 @app.command()
 @error_handler
-def create(name: str, color: Optional[str] = None):
+def add(name: str, color: Optional[str] = None):
     """Create a project."""
     if color is not None:
         color = RGB.parse(color)
@@ -37,13 +41,20 @@ def create(name: str, color: Optional[str] = None):
 
 @app.command()
 @error_handler
-def rename(name: str, new_name: str):
-    """Rename a project."""
+def update(
+    project: str,
+    name: Optional[str] = typer.Option(None, help="New project name."),
+    color: Optional[str] = typer.Option(None, help="New project color"),
+):
+    """Update a project."""
+    if color is not None:
+        color = RGB.parse(color)
+
     with db.session() as session:
         output(
             model=Project,
-            objs=engine.project_rename(
-                session=session, name=name, new_name=new_name
+            objs=engine.project_update(
+                session=session, project=project, name=name, color=color
             ),
         )
 

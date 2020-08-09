@@ -11,6 +11,10 @@ from traktor.decorators import error_handler
 app = typer.Typer(name="tag", help="Tag commands.")
 
 
+# Make sure that the database exists and it's migrated to the latest version
+app.callback()(engine.ensure_db)
+
+
 @app.command()
 @error_handler
 def list():
@@ -21,7 +25,7 @@ def list():
 
 @app.command()
 @error_handler
-def create(name: str, color: Optional[str] = None):
+def add(name: str, color: Optional[str] = None):
     """Create a tag."""
     if color is not None:
         color = RGB.parse(color)
@@ -31,6 +35,26 @@ def create(name: str, color: Optional[str] = None):
             model=Tag,
             objs=engine.tag_get_or_create(
                 session=session, name=name, color=color
+            ),
+        )
+
+
+@app.command()
+@error_handler
+def update(
+    tag: str,
+    name: Optional[str] = typer.Option(None, help="New tag name."),
+    color: Optional[str] = typer.Option(None, help="New tag color"),
+):
+    """Update a project."""
+    if color is not None:
+        color = RGB.parse(color)
+
+    with db.session() as session:
+        output(
+            model=Tag,
+            objs=engine.tag_update(
+                session=session, tag=tag, name=name, color=color
             ),
         )
 

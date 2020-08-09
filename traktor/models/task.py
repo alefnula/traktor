@@ -5,15 +5,16 @@ from sqlalchemy import orm
 
 from traktor.models.db import db
 from traktor.models.enums import RGB
-from traktor.models.model import Colored
 from traktor.models.project import Project
+from traktor.models.model import Colored, Column
 
 
 class Task(Colored):
     HEADERS = Colored.HEADERS + [
-        ("Project", "project.name"),
-        ("Name", "name"),
-        ("Color", "rich_color"),
+        Column(title="Project", path="project.name"),
+        Column(title="Name", path="name"),
+        Column(title="Color", path="rich_color", align=Column.Align.center),
+        Column(title="Default", path="default", align=Column.Align.center),
     ]
 
     __tablename__ = "task"
@@ -29,6 +30,7 @@ class Task(Colored):
         sa.String(36), sa.ForeignKey("project.id", ondelete="CASCADE")
     )
     name = sa.Column(sa.String(127), nullable=False)
+    default = sa.Column(sa.Boolean, default=False)
 
     # Relationships
     entries = orm.relationship(
@@ -77,8 +79,13 @@ class Task(Colored):
 
     def to_dict(self) -> dict:
         d = super().to_dict()
-        d["project_id"] = self.project_id
-        d["name"] = self.name
+        d.update(
+            {
+                "project_id": self.project_id,
+                "name": self.name,
+                "default": self.default,
+            }
+        )
         return d
 
     @classmethod
@@ -86,4 +93,5 @@ class Task(Colored):
         model = super().from_dict(d)
         model.project_id = d["project_id"]
         model.name = d["name"]
+        model.default = d["default"]
         return model

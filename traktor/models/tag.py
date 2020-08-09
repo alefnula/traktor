@@ -1,12 +1,15 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from traktor.models.model import Colored
+from traktor.models.model import Colored, Column
 from traktor.models.entry_tag import entry_tag_table
 
 
 class Tag(Colored):
-    HEADERS = Colored.HEADERS + [("Name", "name"), ("Color", "rich_color")]
+    HEADERS = Colored.HEADERS + [
+        Column(title="Name", path="name"),
+        Column(title="Color", path="rich_color", align=Column.Align.center),
+    ]
 
     __tablename__ = "tag"
 

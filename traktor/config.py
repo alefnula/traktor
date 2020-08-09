@@ -23,12 +23,11 @@ class Config:
         self.db_path = f"{self.config_dir}/traktor.db"
 
         # Directory structure
-        self.project_dir = Path(__file__).parent.parent.absolute()
-        self.app_dir = self.project_dir / "traktor"
+        self.module_dir = Path(__file__).parent.absolute()
 
         self.format: Format = Format.text
-
         self.timezone = tzlocal.get_localzone()
+
         # Load the values from configuration
         self.load()
 

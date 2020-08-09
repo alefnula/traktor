@@ -39,5 +39,10 @@ def test_rgb_str():
 
 
 def test_rgb_parse():
+    # With hash
     assert RGB.parse("#010203") == RGB(1, 2, 3)
     assert RGB.parse("#2164FF") == RGB(33, 100, 255)
+
+    # Without hash
+    assert RGB.parse("010203") == RGB(1, 2, 3)
+    assert RGB.parse("2164FF") == RGB(33, 100, 255)

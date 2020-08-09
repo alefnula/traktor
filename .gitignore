@@ -6,6 +6,10 @@ __pycache__/
 *.ipynb
 .ipynb_checkpoints
 
+# Build artifacts
+traktor.egg-info
+build/
+dist/
 
 # Test artifacts
 .coverage

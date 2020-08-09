@@ -2,7 +2,7 @@
 
 Revision ID: 0001
 Revises: 0000
-Create Date: 2020-08-09 00:42:40.020704
+Create Date: 2020-08-09 15:10:32.791506
 
 """
 from alembic import op
@@ -46,6 +46,7 @@ def upgrade():
         sa.Column("color_hex", sa.String(length=7), nullable=False),
         sa.Column("project_id", sa.String(length=36), nullable=True),
         sa.Column("name", sa.String(length=127), nullable=False),
+        sa.Column("default", sa.Boolean(), nullable=True),
         sa.ForeignKeyConstraint(
             ["project_id"], ["project.id"], ondelete="CASCADE"
         ),

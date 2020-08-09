@@ -7,17 +7,22 @@ from rich.console import Console
 
 
 from traktor.config import config
-from traktor.models import Model, Report
+from traktor.models import VanillaModel, Model
 
 
-def get_path(obj, path):
+def get_path(obj, path) -> str:
     path = path.split(".")
     for item in path:
         obj = getattr(obj, item)
-    return obj
+    if isinstance(obj, bool):
+        return ":white_check_mark:" if obj else ":cross_mark:"
+    return str(obj)
 
 
-def output(model: Type[Union[Model, Report]], objs: Union[List[Model], Model]):
+ModelClass = Union[VanillaModel, Model]
+
+
+def output(model: Type[ModelClass], objs: Union[List[ModelClass], ModelClass]):
     if config.format == config.Format.json:
         if isinstance(objs, list):
             out = [o.to_dict() for o in objs]
@@ -37,10 +42,12 @@ def output(model: Type[Union[Model, Report]], objs: Union[List[Model], Model]):
 
         console = Console()
         table = Table(show_header=True, header_style="bold magenta")
-        for name, _ in model.HEADERS:
-            table.add_column(name)
+        for column in model.HEADERS:
+            table.add_column(header=column.title, justify=column.align)
 
         for o in objs:
-            table.add_row(*[get_path(o, path) for _, path in model.HEADERS])
+            table.add_row(
+                *[get_path(o, column.path) for column in model.HEADERS]
+            )
 
         console.print(table)

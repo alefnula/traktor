@@ -41,19 +41,27 @@ class RGB:
     def rich(self):
         return f"rgb({self.r},{self.g},{self.b})"
 
-    @classmethod
-    def parse(cls, color: str) -> "RGB":
+    @staticmethod
+    def __check_color_string(color: str) -> str:
+        color = color.strip()
         if (
-            not color.startswith("#")
-            and len(color) == 7
-            and all([color[i] in string.hexdigits for i in range(1, 8)])
+            len(color) == 7
+            and color[0] == "#"
+            and all([color[i] in string.hexdigits for i in range(1, 7)])
         ):
+            return color[1:]
+        elif len(color) == 6 and all(
+            [color[i] in string.hexdigits for i in range(6)]
+        ):
+            return color
+        else:
             raise ValueError(f"Invalid color string: {color}")
 
+    @classmethod
+    def parse(cls, color: str) -> "RGB":
+        color = cls.__check_color_string(color=color)
         return cls(
-            r=int(color[1:3], 16),
-            g=int(color[3:5], 16),
-            b=int(color[5:7], 16),
+            r=int(color[:2], 16), g=int(color[2:4], 16), b=int(color[4:], 16),
         )
 
     def to_dict(self) -> Dict[str, int]:
