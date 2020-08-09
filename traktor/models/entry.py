@@ -69,13 +69,16 @@ class Entry(Model):
             int((end_time - ts.make_aware(self.start_time)).total_seconds())
         )
 
-    def stop(self):
-        self.end_time = ts.utcnow()
+    def update_duration(self):
         self.duration = int(
             (
                 ts.make_aware(self.end_time) - ts.make_aware(self.start_time)
             ).total_seconds()
         )
+
+    def stop(self):
+        self.end_time = ts.utcnow()
+        self.update_duration()
 
     # Relationships
     tags = orm.relationship(
