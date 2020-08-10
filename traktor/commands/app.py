@@ -3,21 +3,29 @@ from pathlib import Path
 import typer
 
 from traktor.config import Format, config
+from traktor.commands import timer
 from traktor.commands.db import app as db_app
 from traktor.commands.config import app as config_app
 from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
 from traktor.commands.tag import app as tag_app
-from traktor.commands.timer import app as timer_app
 
 
 app = typer.Typer()
-app.add_typer(db_app)
+
+# Add timer commands
+app.command()(timer.start)
+app.command()(timer.stop)
+app.command()(timer.status)
+app.command()(timer.today)
+app.command()(timer.report)
+
+# Add other apps
+app.add_typer(db_app, hidden=True)
 app.add_typer(config_app)
 app.add_typer(project_app)
 app.add_typer(task_app)
 app.add_typer(tag_app)
-app.add_typer(timer_app)
 
 
 @app.callback()
@@ -58,7 +66,7 @@ def callback(
         config.db_path = str(db_path.absolute())
 
 
-@app.command()
+@app.command(hidden=True)
 def shell():
     """Run IPython shell with loaded configuration and models."""
     try:

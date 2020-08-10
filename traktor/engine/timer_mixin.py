@@ -81,12 +81,14 @@ class TimerMixin(TaskMixin):
 
     @classmethod
     def report(cls, session: orm.Session, days: int) -> List[Report]:
-        dt = utcnow() - timedelta(days=days)
-        since = make_aware(datetime(dt.year, dt.month, dt.day))
-        return cls._make_report(
-            DB.filter(
+        if days == 0:
+            entries = DB.all(session=session, model=Entry)
+        else:
+            dt = utcnow() - timedelta(days=days)
+            since = make_aware(datetime(dt.year, dt.month, dt.day))
+            entries = DB.filter(
                 session=session,
                 model=Entry,
                 filters=[Entry.start_time > since],
             )
-        )
+        return cls._make_report(entries)

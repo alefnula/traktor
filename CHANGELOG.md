@@ -5,6 +5,7 @@
 - Fix broken json output.
 - List all tasks without specifying the project.
 - Database export to json file.
+- Timer commands are now top level commands.
 
 
 ## v0.0.2 (August 09, 2020)
