@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 import typer
@@ -27,13 +28,37 @@ def stop():
         )
 
 
-@error_handler
-def status():
-    """See the current running timer."""
+def __output_status() -> int:
+    """Output status and return number of lines printed."""
     with db.session() as session:
-        output(
-            model=Entry, objs=engine.status(session=session),
-        )
+        objs = engine.status(session=session)
+        output(model=Entry, objs=objs)
+        return 6 if len(objs) > 0 else 2
+
+
+@error_handler
+def status(
+    interactive: bool = typer.Option(
+        False, "-i", "--interactive", help="Show status in interactive mode."
+    )
+):
+    """See the current running timer."""
+    if interactive:
+        no_lines = 0
+        while True:
+            try:
+                if no_lines > 0:
+                    print("\033[F" * no_lines)
+                    for _ in range(no_lines - 1):
+                        print("\033[K")
+                    print("\033[F" * no_lines)
+
+                no_lines = __output_status()
+                time.sleep(1)
+            except KeyboardInterrupt:
+                return
+    else:
+        __output_status()
 
 
 @error_handler

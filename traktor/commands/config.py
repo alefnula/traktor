@@ -4,7 +4,7 @@ from traktor.engine import engine
 from traktor.output import output
 from traktor.models import ConfigEntry, ConfigKey
 
-app = typer.Typer(name="config", help="Configuration set/get.")
+app = typer.Typer(name="config", help="Configuration set/get.", hidden=True)
 
 
 @app.command()

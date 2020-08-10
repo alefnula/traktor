@@ -6,7 +6,7 @@ from traktor.models import db
 from traktor.engine import engine
 
 
-app = typer.Typer(name="db", help="Database commands.")
+app = typer.Typer(name="db", help="Database commands.", hidden=True)
 
 
 @app.command()

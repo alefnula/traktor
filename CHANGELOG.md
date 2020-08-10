@@ -6,6 +6,8 @@
 - List all tasks without specifying the project.
 - Database export to json file.
 - Timer commands are now top level commands.
+- Add support for switching between test and production database.
+- Add interactive status.
 
 
 ## v0.0.2 (August 09, 2020)

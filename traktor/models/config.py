@@ -1,13 +1,7 @@
-import enum
 from dataclasses import dataclass
 
+from traktor.config import ConfigKey
 from traktor.models.model import VanillaModel, Column
-
-
-class ConfigKey(str, enum.Enum):
-    format = "format"
-    db_path = "db_path"
-    timezone = "timezone"
 
 
 @dataclass

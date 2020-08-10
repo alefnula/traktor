@@ -21,7 +21,7 @@ app.command()(timer.today)
 app.command()(timer.report)
 
 # Add other apps
-app.add_typer(db_app, hidden=True)
+app.add_typer(db_app)
 app.add_typer(config_app)
 app.add_typer(project_app)
 app.add_typer(task_app)
