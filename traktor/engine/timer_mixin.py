@@ -59,10 +59,10 @@ class TimerMixin(TaskMixin):
             report = Report(
                 project=entry.project.name,
                 task=entry.task.name,
-                time=entry.duration,
+                duration=entry.duration,
             )
             if report.key in reports:
-                reports[report.key].time += report.time
+                reports[report.key].duration += report.duration
             else:
                 reports[report.key] = report
         return list(reports.values())

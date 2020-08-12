@@ -14,7 +14,7 @@ class Report(VanillaModel):
 
     project: str
     task: str
-    time: int
+    duration: int
 
     @property
     def key(self):
@@ -22,15 +22,18 @@ class Report(VanillaModel):
 
     @property
     def humanized_time(self):
-        return humanize(self.time)
+        return humanize(self.duration)
 
     def to_dict(self) -> dict:
         return {
             "project": self.project,
             "task": self.task,
-            "time": self.time,
+            "duration": self.duration,
+            "running_time": humanize(self.duration),
         }
 
     @classmethod
     def from_dict(cls, d: dict) -> "Report":
-        return cls(project=d["project"], task=d["task"], time=d["time"])
+        return cls(
+            project=d["project"], task=d["task"], duration=d["duration"]
+        )
