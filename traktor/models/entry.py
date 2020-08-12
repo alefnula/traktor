@@ -110,6 +110,7 @@ class Entry(Model):
                 "start_time": ts.dt_to_str(self.start_time),
                 "end_time": ts.dt_to_str(self.end_time),
                 "duration": self.duration,
+                "running_time": self.running_time,
             }
         )
         return d
