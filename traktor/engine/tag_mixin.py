@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy import orm
 
 from traktor import errors
-from traktor.models import DB, RGB, Task, Tag
+from traktor.models import DB, RGB, Tag
 
 
 class TagMixin:
@@ -15,7 +15,7 @@ class TagMixin:
         Args:
             session (orm.Session): SQLAlchemy session.
         """
-        return DB.all(session=session, model=Task)
+        return DB.all(session=session, model=Tag)
 
     @staticmethod
     def tag_get(session: orm.Session, name: str) -> Tag:
