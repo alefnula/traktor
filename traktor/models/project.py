@@ -1,19 +1,13 @@
-import sqlalchemy as sa
-from sqlalchemy import orm
-from sqlalchemy.engine import RowProxy
+from typing import Optional
 
-from traktor.models.model import Colored, Column
+from sqlalchemy import orm
+from pydantic import BaseModel, validator
+
+from traktor.models.model import RGB, Colored
 
 
 class Project(Colored):
-    HEADERS = Colored.HEADERS + [
-        Column(title="Name", path="name"),
-        Column(title="Color", path="rich_color", align=Column.Align.center),
-    ]
-
     __tablename__ = "project"
-
-    name = sa.Column(sa.String(127), unique=True, nullable=False)
 
     # Relationships
     tasks = orm.relationship(
@@ -32,23 +26,26 @@ class Project(Colored):
     )
 
     def __str__(self):
-        return f"Project(name={self.name}, color={self.color_hex})"
+        return f"Project(name={self.name}, color={self.color})"
 
     __repr__ = __str__
 
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d["name"] = self.name
-        return d
 
-    @classmethod
-    def from_dict(cls, d: dict) -> "Project":
-        model = super().from_dict(d)
-        model.name = d["name"]
-        return model
+class ProjectCreateRequest(BaseModel):
+    name: str
+    color: Optional[str] = None
 
-    @classmethod
-    def from_row(cls, row: RowProxy) -> "Project":
-        model = super().from_row(row)
-        model.name = row.name
-        return model
+    @validator("color")
+    def validate_color(cls, value):
+        c = RGB(value)
+        return c.hex
+
+
+class ProjectUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    color: Optional[str] = None
+
+    @validator("color")
+    def validate_color(cls, value):
+        c = RGB(value)
+        return c.hex

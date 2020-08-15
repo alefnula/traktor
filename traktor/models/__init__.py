@@ -5,6 +5,8 @@ __all__ = [
     "VanillaModel",
     "Model",
     "Project",
+    "ProjectCreateRequest",
+    "ProjectUpdateRequest",
     "Task",
     "Tag",
     "Entry",
@@ -15,7 +17,11 @@ __all__ = [
 
 from traktor.models.enums import Sort, RGB
 from traktor.models.model import Base, VanillaModel, Model
-from traktor.models.project import Project
+from traktor.models.project import (
+    Project,
+    ProjectCreateRequest,
+    ProjectUpdateRequest,
+)
 from traktor.models.task import Task
 from traktor.models.tag import Tag
 from traktor.models.entry import Entry

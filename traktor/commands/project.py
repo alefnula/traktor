@@ -29,12 +29,12 @@ def list():
 def add(name: str, color: Optional[str] = None):
     """Create a project."""
     if color is not None:
-        color = RGB.parse(color)
+        color = RGB(color)
 
     with db.session() as session:
         output(
             model=Project,
-            objs=engine.project_get_or_create(
+            objs=engine.project_create(
                 session=session, name=name, color=color
             ),
         )
@@ -43,27 +43,26 @@ def add(name: str, color: Optional[str] = None):
 @app.command()
 @error_handler
 def update(
-    project: str,
+    project_id: str,
     name: Optional[str] = typer.Option(None, help="New project name."),
     color: Optional[str] = typer.Option(None, help="New project color"),
 ):
     """Update a project."""
     if color is not None:
-        color = RGB.parse(color)
+        color = RGB(color)
 
     with db.session() as session:
         output(
             model=Project,
             objs=engine.project_update(
-                session=session, project=project, name=name, color=color
+                session=session, project_id=project_id, name=name, color=color
             ),
         )
 
 
 @app.command()
 @error_handler
-def delete(name: str):
+def delete(project_id: str):
     """Delete a project."""
     with db.session() as session:
-        project = engine.project_get(session=session, name=name)
-        engine.project_delete(session=session, project=project)
+        engine.project_delete(session=session, project_id=project_id)

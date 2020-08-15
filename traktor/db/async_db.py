@@ -170,13 +170,13 @@ class AsyncDB:
         await self.db.execute(
             obj.__table__.update()
             .where(obj.__class__.id == obj.id)
-            .values(**obj.to_db_dict())
+            .values(**obj.column_dict())
         )
         return obj
 
     async def save(self, obj: Model) -> Model:
         await self.db.execute(
-            obj.__table__.insert().values(**obj.to_db_dict())
+            obj.__table__.insert().values(**obj.column_dict())
         )
         return obj
 

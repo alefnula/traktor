@@ -22,7 +22,3 @@ class ConfigEntry(VanillaModel):
             "key": self.key,
             "value": self.value,
         }
-
-    @classmethod
-    def from_dict(cls, d: dict) -> "ConfigEntry":
-        return cls(key=d["key"], value=d["value"])

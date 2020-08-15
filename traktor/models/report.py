@@ -31,9 +31,3 @@ class Report(VanillaModel):
             "duration": self.duration,
             "running_time": humanize(self.duration),
         }
-
-    @classmethod
-    def from_dict(cls, d: dict) -> "Report":
-        return cls(
-            project=d["project"], task=d["task"], duration=d["duration"]
-        )

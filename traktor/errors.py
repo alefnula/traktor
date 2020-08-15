@@ -96,19 +96,24 @@ class MultipleObjectsFound(TraktorError):
 
 
 class TimerAlreadyRunning(TraktorError):
-    def __init__(self, project: str, task: str):
-        self.project = project
-        self.task = task
+    def __init__(self, project_id: str, task_id: str):
+        self.project_id = project_id
+        self.task_id = task_id
 
         super().__init__(
-            message=f"Timer is already running for {project}/{task}."
+            message=f"Timer is already running for {project_id}/{task_id}."
         )
 
 
+class TimerIsNotRunning(TraktorError):
+    def __init__(self):
+        super().__init__(message="Timer is not running.")
+
+
 class NoDefaultTask(TraktorError):
-    def __init__(self, project: str):
-        self.project = project
+    def __init__(self, project_id: str):
+        self.project_id = project_id
 
         super().__init__(
-            message=f"No default task found for project: {project}."
+            message=f"No default task found for project: {project_id}."
         )

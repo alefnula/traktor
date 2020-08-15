@@ -2,9 +2,10 @@ from uuid import UUID
 from typing import List
 
 from traktor import errors
-from traktor.models import RGB, Project
 from traktor.db.async_db import async_db as db
-from traktor.engine.async_engine.requests import (
+from traktor.models import (
+    RGB,
+    Project,
     ProjectCreateRequest,
     ProjectUpdateRequest,
 )
@@ -34,7 +35,7 @@ class ProjectMixin:
             )
         except errors.ObjectNotFound:
             project = Project.create(
-                name=request.name, color_hex=(request.color or RGB().hex),
+                name=request.name, color=(request.color or RGB().hex),
             )
             project = await db.save(project)
             return project
@@ -49,7 +50,7 @@ class ProjectMixin:
             project.name = request.name
         # Change color
         if request.color is not None:
-            project.color_hex = request.color
+            project.color = request.color
 
         await db.update(project)
         return project

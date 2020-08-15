@@ -69,16 +69,13 @@ class Entry(Model):
             int((end_time - ts.make_aware(self.start_time)).total_seconds())
         )
 
-    def update_duration(self):
+    def stop(self):
+        self.end_time = ts.utcnow()
         self.duration = int(
             (
                 ts.make_aware(self.end_time) - ts.make_aware(self.start_time)
             ).total_seconds()
         )
-
-    def stop(self):
-        self.end_time = ts.utcnow()
-        self.update_duration()
 
     # Relationships
     tags = orm.relationship(
@@ -101,28 +98,9 @@ class Entry(Model):
         d = super().to_dict()
         d.update(
             {
-                "project_id": self.project_id,
                 "project": self.project.name,
-                "task_id": self.task_id,
                 "task": self.task.name,
-                "description": self.description,
-                "notes": self.notes,
-                "start_time": ts.dt_to_str(self.start_time),
-                "end_time": ts.dt_to_str(self.end_time),
-                "duration": self.duration,
                 "running_time": self.running_time,
             }
         )
         return d
-
-    @classmethod
-    def from_dict(cls, d: dict) -> "Entry":
-        model = super().from_dict(d)
-        model.project_id = d["project_id"]
-        model.task_id = d["task_id"]
-        model.description = d["description"]
-        model.notes = d["notes"]
-        model.start_time = ts.str_to_dt(d["start_time"])
-        model.end_time = ts.str_to_dt(d["end_time"])
-        model.duration = d["duration"]
-        return model

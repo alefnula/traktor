@@ -1,11 +1,11 @@
 from typing import List, Optional
 
-
+import slugify
 from sqlalchemy import orm
 
 from traktor import errors
 from traktor.models import RGB, Tag
-from traktor.db.sync_db import SyncDB as DB
+from traktor.db.sync_db import sync_db as db
 
 
 class TagMixin:
@@ -16,26 +16,22 @@ class TagMixin:
         Args:
             session (orm.Session): SQLAlchemy session.
         """
-        return DB.all(session=session, model=Tag)
+        return db.all(session=session, model=Tag)
 
     @staticmethod
-    def tag_get(session: orm.Session, name: str) -> Tag:
-        return DB.get(session=session, model=Tag, filters=[Tag.name == name])
+    def tag_get(session: orm.Session, tag_id: str) -> Tag:
+        return db.get(session=session, model=Tag, filters=[Tag.slug == tag_id])
 
     @classmethod
-    def tag_get_or_create(
+    def tag_create(
         cls, session: orm.Session, name: str, color: Optional[RGB] = None,
     ) -> Tag:
         try:
-            obj = cls.tag_get(session=session, name=name)
-            if color is not None:
-                if obj.color != color:
-                    obj.color = color
-                    DB.save(session=session, obj=obj)
-
+            cls.tag_get(session=session, tag_id=slugify.slugify(name))
+            raise errors.ObjectAlreadyExists(model=Tag, query={"name": name})
         except errors.ObjectNotFound:
-            obj = Tag(name=name, color_hex=(color or RGB()).hex,)
-            DB.save(session=session, obj=obj)
+            obj = Tag(name=name, color=(color or RGB()).hex,)
+            db.save(session=session, obj=obj)
 
         return obj
 
@@ -43,20 +39,21 @@ class TagMixin:
     def tag_update(
         cls,
         session: orm.Session,
-        tag: str,
+        tag_id: str,
         name: Optional[str],
         color: Optional[RGB],
     ) -> Tag:
-        tag = cls.tag_get(session=session, name=tag)
+        tag = cls.tag_get(session=session, tag_id=tag_id)
         # Change name
         if name is not None:
-            tag.name = name
+            tag.rename(name)
         # Change color
         if color is not None:
             tag.color = color
-        DB.save(session, obj=tag)
+        db.save(session, obj=tag)
         return tag
 
-    @staticmethod
-    def tag_delete(session: orm.Session, tag: Tag):
-        DB.delete(session=session, obj=tag)
+    @classmethod
+    def tag_delete(cls, session: orm.Session, tag_id: str):
+        tag = cls.tag_get(session=session, tag_id=tag_id)
+        db.delete(session=session, obj=tag)

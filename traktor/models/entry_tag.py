@@ -9,8 +9,12 @@ entry_tag_table = sa.Table(
         "entry_id",
         sa.String(36),
         sa.ForeignKey("entry.id", ondelete="CASCADE"),
+        nullable=False,
     ),
     sa.Column(
-        "tag_id", sa.String(36), sa.ForeignKey("tag.id", ondelete="CASCADE")
+        "tag_id",
+        sa.String(36),
+        sa.ForeignKey("tag.id", ondelete="CASCADE"),
+        nullable=False,
     ),
 )

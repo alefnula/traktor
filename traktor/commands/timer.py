@@ -11,12 +11,14 @@ from traktor.engine import sync_engine as engine
 
 
 @error_handler
-def start(project: str, task: Optional[str] = typer.Argument(None)):
+def start(project_id: str, task_id: Optional[str] = typer.Argument(None)):
     """Start the timer."""
     with db.session() as session:
         output(
             model=Entry,
-            objs=engine.start(session=session, project=project, task=task),
+            objs=engine.start(
+                session=session, project_id=project_id, task_id=task_id
+            ),
         )
 
 
@@ -32,9 +34,9 @@ def stop():
 def __output_status() -> int:
     """Output status and return number of lines printed."""
     with db.session() as session:
-        objs = engine.status(session=session)
-        output(model=Entry, objs=objs)
-        return 6 if len(objs) > 0 else 2
+        timer = engine.status(session=session)
+        output(model=Entry, objs=timer)
+        return 2 if timer is None else 6
 
 
 @error_handler
