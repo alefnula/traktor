@@ -93,7 +93,7 @@ class Model(Base):
         )
 
 
-def _slugify_name(context):
+def slugify_name(context):
     return slugify.slugify(context.get_current_parameters()["name"])
 
 
@@ -107,7 +107,7 @@ class Sluggable(Model):
 
     name = sa.Column(sa.String(255), nullable=False)
     slug = sa.Column(
-        sa.String(255), unique=True, nullable=False, default=_slugify_name
+        sa.String(255), unique=True, nullable=False, default=slugify_name
     )
 
     def rename(self, name: str):

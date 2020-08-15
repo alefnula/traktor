@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from traktor.models.model import Colored, Column
+from traktor.models.model import Colored, Column, slugify_name
 
 
 class Task(Colored):
@@ -12,14 +12,15 @@ class Task(Colored):
     )
 
     __tablename__ = "task"
-    _table_args__ = (
+    __table_args__ = (
         sa.UniqueConstraint(
             "project_id",
-            "name",
-            name="task_project_id_task_name_unique_constraint",
+            "slug",
+            name="task_project_id_task_slug_unique_constraint",
         ),
     )
 
+    slug = sa.Column(sa.String(255), nullable=False, default=slugify_name)
     project_id = sa.Column(
         sa.String(36), sa.ForeignKey("project.id", ondelete="CASCADE")
     )
