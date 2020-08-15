@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
+from sqlalchemy.engine import RowProxy
 
 from traktor.models.model import Colored, Column
 
@@ -44,4 +45,10 @@ class Project(Colored):
     def from_dict(cls, d: dict) -> "Project":
         model = super().from_dict(d)
         model.name = d["name"]
+        return model
+
+    @classmethod
+    def from_row(cls, row: RowProxy) -> "Project":
+        model = super().from_row(row)
+        model.name = row.name
         return model

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import typer
 
-from traktor.models import db
-from traktor.engine import engine
+from traktor.db.sync_db import sync_db as db
+from traktor.engine import sync_engine as engine
 
 
 app = typer.Typer(name="db", help="Database commands.", hidden=True)

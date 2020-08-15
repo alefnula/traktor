@@ -9,6 +9,7 @@ from traktor.commands.config import app as config_app
 from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
 from traktor.commands.tag import app as tag_app
+from traktor.commands.server import app as server_app
 
 
 app = typer.Typer()
@@ -26,6 +27,7 @@ app.add_typer(config_app)
 app.add_typer(project_app)
 app.add_typer(task_app)
 app.add_typer(tag_app)
+app.add_typer(server_app)
 
 
 @app.callback()
@@ -72,12 +74,22 @@ def shell():
     try:
         from IPython import embed
         from traktor.config import config
-        from traktor.models import db, Sort, RGB, Project, Task, Tag, Entry
+        from traktor.engine import sync_engine
+        from traktor.db.sync_db import sync_db
+        from traktor.models import (
+            Sort,
+            RGB,
+            Project,
+            Task,
+            Tag,
+            Entry,
+        )
 
         embed(
             user_ns={
                 "config": config,
-                "db": db,
+                "db": sync_db,
+                "engine": sync_engine,
                 "Sort": Sort,
                 "RGB": RGB,
                 "Project": Project,

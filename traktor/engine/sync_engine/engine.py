@@ -4,14 +4,15 @@ from pathlib import Path
 
 from sqlalchemy import orm
 
-from traktor.models import DB, Entry
-from traktor.engine.tag_mixin import TagMixin
-from traktor.engine.timer_mixin import TimerMixin
-from traktor.engine.db_mixin import DBMixin
-from traktor.engine.config_mixin import ConfigMixin
+from traktor.models import Entry
+from traktor.db.sync_db import SyncDB as DB
+from traktor.engine.sync_engine.tag_mixin import TagMixin
+from traktor.engine.sync_engine.timer_mixin import TimerMixin
+from traktor.engine.sync_engine.db_mixin import DBMixin
+from traktor.engine.sync_engine.config_mixin import ConfigMixin
 
 
-class Engine(TagMixin, TimerMixin, DBMixin, ConfigMixin):
+class SyncEngine(TagMixin, TimerMixin, DBMixin, ConfigMixin):
     @classmethod
     def export(cls, session: orm.Session, path: Path):
         export = {
@@ -32,4 +33,4 @@ class Engine(TagMixin, TimerMixin, DBMixin, ConfigMixin):
         path.write_text(json.dumps(export, indent=4), encoding="utf-8")
 
 
-engine = Engine()
+sync_engine = SyncEngine()

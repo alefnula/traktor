@@ -6,8 +6,9 @@ from sqlalchemy import orm
 
 from traktor import errors
 from traktor.timestamp import utcnow, make_aware
-from traktor.models import DB, Entry, Report
-from traktor.engine.task_mixin import TaskMixin
+from traktor.models import Entry, Report
+from traktor.db.sync_db import SyncDB as DB
+from traktor.engine.sync_engine.task_mixin import TaskMixin
 
 
 class TimerMixin(TaskMixin):

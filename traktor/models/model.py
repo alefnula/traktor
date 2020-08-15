@@ -3,6 +3,7 @@ import uuid
 from dataclasses import dataclass
 
 import sqlalchemy as sa
+from sqlalchemy.engine import RowProxy
 from sqlalchemy.ext.declarative import declarative_base
 
 from traktor.timestamp import utcnow
@@ -60,8 +61,28 @@ class Model(Base):
     updated_on = sa.Column(sa.DateTime, default=utcnow, onupdate=utcnow)
 
     @classmethod
+    def create(cls, **kwargs) -> "Model":
+        model = cls(**kwargs)
+        for column in cls.__table__.columns:
+            if column.name not in kwargs and column.default is not None:
+                if column.default.is_callable:
+                    try:
+                        setattr(model, column.name, column.default.arg(None))
+                    except Exception:
+                        pass
+                else:
+                    setattr(model, column.name, column.default.arg)
+        return model
+
+    @classmethod
     def class_name(cls):
         return cls.__name__
+
+    def to_db_dict(self) -> dict:
+        return {
+            column.name: getattr(self, column.name)
+            for column in self.__table__.columns
+        }
 
     def to_dict(self) -> dict:
         return {
@@ -76,6 +97,12 @@ class Model(Base):
             id=d["id"],
             created_on=str_to_dt(d["created_on"]),
             updated_on=str_to_dt(d["updated_on"]),
+        )
+
+    @classmethod
+    def from_row(cls, row: RowProxy) -> "Model":
+        return cls(
+            id=row.id, created_on=row.created_on, updated_on=row.updated_on,
         )
 
 
@@ -100,11 +127,17 @@ class Colored(Model):
 
     def to_dict(self) -> dict:
         d = super().to_dict()
-        d["color"] = self.color_hex
+        d["color_hex"] = self.color_hex
         return d
 
     @classmethod
     def from_dict(cls, d: dict) -> "Colored":
         model = super().from_dict(d)
-        model.color_hex = d["color"]
+        model.color_hex = d["color_hex"]
+        return model
+
+    @classmethod
+    def from_row(cls, row: RowProxy) -> "Colored":
+        model = super().from_row(row)
+        model.color_hex = row.color_hex
         return model

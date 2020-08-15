@@ -3,8 +3,9 @@ from typing import List, Optional
 from sqlalchemy import orm
 
 from traktor import errors
-from traktor.models import DB, RGB, Task
-from traktor.engine.project_mixin import ProjectMixin
+from traktor.models import RGB, Task
+from traktor.db.sync_db import SyncDB as DB
+from traktor.engine.sync_engine.project_mixin import ProjectMixin
 
 
 class TaskMixin(ProjectMixin):

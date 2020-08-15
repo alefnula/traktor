@@ -13,6 +13,7 @@ from traktor.config import config
 from traktor.models.enums import Sort
 from traktor.models.model import Model
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +24,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 
-class DB:
+class SyncDB:
     def __init__(self):
         self.__engine = None
         self.__session_class = None
@@ -277,4 +278,4 @@ class DB:
         ).count()
 
 
-db = DB()
+sync_db = SyncDB()

@@ -1,7 +1,7 @@
 import typer
 
-from traktor.engine import engine
 from traktor.output import output
+from traktor.engine import sync_engine as engine
 from traktor.models import ConfigEntry, ConfigKey
 
 app = typer.Typer(name="config", help="Configuration set/get.", hidden=True)

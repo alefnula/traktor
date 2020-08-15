@@ -1,6 +1,4 @@
 __all__ = [
-    "db",
-    "DB",
     "Sort",
     "RGB",
     "Base",
@@ -15,7 +13,6 @@ __all__ = [
     "ConfigKey",
 ]
 
-from traktor.models.db import db, DB
 from traktor.models.enums import Sort, RGB
 from traktor.models.model import Base, VanillaModel, Model
 from traktor.models.project import Project

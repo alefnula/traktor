@@ -1,11 +1,7 @@
-from typing import Optional
-
 import sqlalchemy as sa
 from sqlalchemy import orm
+from sqlalchemy.engine import RowProxy
 
-from traktor.models.db import db
-from traktor.models.enums import RGB
-from traktor.models.project import Project
 from traktor.models.model import Colored, Column
 
 
@@ -41,34 +37,6 @@ class Task(Colored):
         passive_deletes=True,
     )
 
-    @classmethod
-    def get_or_create(
-        cls,
-        session: orm.Session,
-        project: Project,
-        name: str,
-        color: Optional[RGB] = None,
-    ) -> "Task":
-        obj: "Task" = db.first(
-            session=session,
-            model=cls,
-            filters=[cls.project_id == project.id, cls.name == name],
-        )
-        if obj is not None:
-            if color is not None:
-                if obj.color != color:
-                    obj.color = color
-                    db.save(obj)
-        else:
-            obj = cls(
-                project_id=project.id,
-                name=name,
-                color_hex=(color or RGB()).hex,
-            )
-            db.save(session=session, obj=obj)
-
-        return obj
-
     def __str__(self):
         return (
             f"Task(project={self.project.name}, name={self.name}, "
@@ -94,4 +62,12 @@ class Task(Colored):
         model.project_id = d["project_id"]
         model.name = d["name"]
         model.default = d["default"]
+        return model
+
+    @classmethod
+    def from_row(cls, row: RowProxy) -> "Task":
+        model = super().from_row(row)
+        model.project_id = row.project_id
+        model.name = row.name
+        model.default = row.default
         return model

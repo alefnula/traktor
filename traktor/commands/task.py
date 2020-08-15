@@ -3,9 +3,10 @@ from typing import Optional
 import typer
 
 from traktor.output import output
-from traktor.engine import engine
-from traktor.models import db, RGB, Task
+from traktor.models import RGB, Task
+from traktor.db.sync_db import sync_db as db
 from traktor.decorators import error_handler
+from traktor.engine import sync_engine as engine
 
 
 app = typer.Typer(name="task", help="Task commands.")

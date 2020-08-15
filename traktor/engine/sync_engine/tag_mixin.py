@@ -4,7 +4,8 @@ from typing import List, Optional
 from sqlalchemy import orm
 
 from traktor import errors
-from traktor.models import DB, RGB, Tag
+from traktor.models import RGB, Tag
+from traktor.db.sync_db import SyncDB as DB
 
 
 class TagMixin:

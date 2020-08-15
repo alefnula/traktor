@@ -3,10 +3,11 @@ from typing import Optional
 
 import typer
 
-from traktor.engine import engine
 from traktor.output import output
 from traktor.decorators import error_handler
-from traktor.models import db, Entry, Report
+from traktor.models import Entry, Report
+from traktor.db.sync_db import sync_db as db
+from traktor.engine import sync_engine as engine
 
 
 @error_handler

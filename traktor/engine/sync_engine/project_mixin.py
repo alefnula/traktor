@@ -1,10 +1,10 @@
 from typing import List, Optional
 
-
 from sqlalchemy import orm
 
 from traktor import errors
-from traktor.models import DB, RGB, Project
+from traktor.models import RGB, Project
+from traktor.db.sync_db import SyncDB as DB
 
 
 class ProjectMixin:
