@@ -32,3 +32,10 @@ def export(path: Path):
     """Export database to JSON document."""
     with db.session() as session:
         engine.export(session=session, path=path)
+
+
+@app.command()
+def load(path: Path):
+    """Import database export from JSON document."""
+    with db.session() as session:
+        engine.load(session=session, path=path)

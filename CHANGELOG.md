@@ -5,6 +5,7 @@
 - Fix broken json output.
 - List all tasks without specifying the project.
 - Database export to json file.
+- Database load from json file.
 - Timer commands are now top level commands.
 - Add support for switching between test and production database.
 - Add interactive status.
