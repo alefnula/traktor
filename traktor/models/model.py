@@ -89,7 +89,7 @@ class Model(Base):
     def from_row(cls, row: RowProxy) -> "Model":
         return cls(
             **{
-                column.name: getattr(row, column.name)
+                column.name: row[column.name]
                 for column in cls.__table__.columns
             }
         )
