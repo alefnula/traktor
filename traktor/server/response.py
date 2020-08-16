@@ -15,7 +15,7 @@ class JSONResponse(Response):
 
 def tjson(func):
     @functools.wraps(func)
-    def wrapper(*args, **kwargs) -> JSONResponse:
-        return JSONResponse(func(*args, **kwargs))
+    async def wrapper(*args, **kwargs) -> JSONResponse:
+        return JSONResponse(await func(*args, **kwargs))
 
     return wrapper

@@ -1,4 +1,3 @@
-from uuid import UUID
 from typing import List
 
 from traktor import errors
@@ -18,18 +17,18 @@ class ProjectMixin:
 
     @staticmethod
     async def project_get(project_id: str) -> Project:
-        try:
-            UUID(project_id)
-            return await db.get_by_id(model=Project, obj_id=project_id)
-        except ValueError:
-            return await db.get(
-                model=Project, filters=[Project.name == project_id]
-            )
+        return await db.get(
+            model=Project, filters=[Project.slug == project_id]
+        )
+
+    @staticmethod
+    async def project_get_by_uuid(project_id: str) -> Project:
+        return await db.get_by_id(model=Project, obj_id=project_id)
 
     @classmethod
     async def project_create(cls, request: ProjectCreateRequest) -> Project:
         try:
-            await cls.project_get(project_id=request.name)
+            await cls.project_get(project_id=request.slug)
             raise errors.ObjectAlreadyExists(
                 model=Project, query={"name": request.name}
             )
@@ -37,8 +36,7 @@ class ProjectMixin:
             project = Project.create(
                 name=request.name, color=(request.color or RGB().hex),
             )
-            project = await db.save(project)
-            return project
+            return await db.save(project)
 
     @classmethod
     async def project_update(
@@ -47,13 +45,12 @@ class ProjectMixin:
         project = await cls.project_get(project_id=project_id)
         # Change name
         if request.name is not None:
-            project.name = request.name
+            project.rename(request.name)
         # Change color
         if request.color is not None:
             project.color = request.color
 
-        await db.update(project)
-        return project
+        return await db.update(project)
 
     @classmethod
     async def project_delete(cls, project_id: str) -> bool:

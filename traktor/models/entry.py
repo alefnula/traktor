@@ -30,10 +30,14 @@ class Entry(Model):
     __tablename__ = "entry"
 
     project_id = sa.Column(
-        sa.String(36), sa.ForeignKey("project.id", ondelete="CASCADE")
+        sa.String(36),
+        sa.ForeignKey("project.id", ondelete="CASCADE"),
+        nullable=False,
     )
     task_id = sa.Column(
-        sa.String(36), sa.ForeignKey("task.id", ondelete="CASCADE")
+        sa.String(36),
+        sa.ForeignKey("task.id", ondelete="CASCADE"),
+        nullable=False,
     )
 
     description = sa.Column(sa.String(2047), nullable=False, default="")

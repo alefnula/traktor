@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import orm
 
 from traktor import errors
-from traktor.timestamp import utcnow, make_aware
+from traktor import timestamp as ts
 from traktor.models import Entry, Report
 from traktor.db.sync_db import sync_db as db
 from traktor.engine.sync_engine.task_mixin import TaskMixin
@@ -15,7 +15,7 @@ class TimerMixin(TaskMixin):
     # Timer
 
     @classmethod
-    def start(
+    def timer_start(
         cls,
         session: orm.Session,
         project_id: str,
@@ -40,11 +40,10 @@ class TimerMixin(TaskMixin):
             )
 
         entry = Entry(project=task.project, task=task)
-        db.save(session=session, obj=entry)
-        return entry
+        return db.save(session=session, obj=entry)
 
     @staticmethod
-    def stop(session: orm.Session) -> Entry:
+    def timer_stop(session: orm.Session) -> Entry:
         timer = db.first(
             session=session, model=Entry, filters=[Entry.end_time.is_(None)]
         )
@@ -56,13 +55,13 @@ class TimerMixin(TaskMixin):
         return timer
 
     @staticmethod
-    def status(session: orm.Session) -> Entry:
+    def timer_status(session: orm.Session) -> Entry:
         return db.first(
             session=session, model=Entry, filters=[Entry.end_time.is_(None)]
         )
 
     @staticmethod
-    def _make_report(entries: List[Entry]):
+    def _make_report(entries: List[Entry]) -> List[Report]:
         reports = {}
         for entry in entries:
             report = Report(
@@ -77,9 +76,9 @@ class TimerMixin(TaskMixin):
         return list(reports.values())
 
     @classmethod
-    def today(cls, session: orm.Session):
-        dt = utcnow()
-        today = make_aware(datetime(dt.year, dt.month, dt.day))
+    def timer_today(cls, session: orm.Session):
+        dt = ts.utcnow()
+        today = ts.make_aware(datetime(dt.year, dt.month, dt.day))
         return cls._make_report(
             db.filter(
                 session=session,
@@ -89,12 +88,12 @@ class TimerMixin(TaskMixin):
         )
 
     @classmethod
-    def report(cls, session: orm.Session, days: int) -> List[Report]:
+    def timer_report(cls, session: orm.Session, days: int) -> List[Report]:
         if days == 0:
             entries = db.all(session=session, model=Entry)
         else:
-            dt = utcnow() - timedelta(days=days)
-            since = make_aware(datetime(dt.year, dt.month, dt.day))
+            dt = ts.utcnow() - timedelta(days=days)
+            since = ts.make_aware(datetime(dt.year, dt.month, dt.day))
             entries = db.filter(
                 session=session,
                 model=Entry,

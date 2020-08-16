@@ -53,8 +53,10 @@ class Model(Base):
     id = sa.Column(sa.String(36), default=generate_uuid, primary_key=True)
 
     # Timestamps
-    created_on = sa.Column(sa.DateTime, default=utcnow)
-    updated_on = sa.Column(sa.DateTime, default=utcnow, onupdate=utcnow)
+    created_on = sa.Column(sa.DateTime, default=utcnow, nullable=False)
+    updated_on = sa.Column(
+        sa.DateTime, default=utcnow, onupdate=utcnow, nullable=False
+    )
 
     @classmethod
     def create(cls, **kwargs) -> "Model":
@@ -109,6 +111,12 @@ class Sluggable(Model):
     slug = sa.Column(
         sa.String(255), unique=True, nullable=False, default=slugify_name
     )
+
+    @classmethod
+    def create(cls, **kwargs) -> "Sluggable":
+        model = super().create(**kwargs)
+        model.slug = slugify.slugify(model.name)
+        return model
 
     def rename(self, name: str):
         self.name = name

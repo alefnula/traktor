@@ -8,7 +8,11 @@ __all__ = [
     "ProjectCreateRequest",
     "ProjectUpdateRequest",
     "Task",
+    "TaskCreateRequest",
+    "TaskUpdateRequest",
     "Tag",
+    "TagCreateRequest",
+    "TagUpdateRequest",
     "Entry",
     "Report",
     "ConfigEntry",
@@ -22,8 +26,8 @@ from traktor.models.project import (
     ProjectCreateRequest,
     ProjectUpdateRequest,
 )
-from traktor.models.task import Task
-from traktor.models.tag import Tag
+from traktor.models.task import Task, TaskCreateRequest, TaskUpdateRequest
+from traktor.models.tag import Tag, TagCreateRequest, TagUpdateRequest
 from traktor.models.entry import Entry
 from traktor.models.report import Report
 from traktor.models.config import ConfigEntry, ConfigKey

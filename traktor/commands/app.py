@@ -10,6 +10,7 @@ from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
 from traktor.commands.tag import app as tag_app
 from traktor.commands.server import app as server_app
+from traktor.commands.client import app as client_app
 
 
 app = typer.Typer()
@@ -28,6 +29,7 @@ app.add_typer(project_app)
 app.add_typer(task_app)
 app.add_typer(tag_app)
 app.add_typer(server_app)
+app.add_typer(client_app)
 
 
 @app.callback()

@@ -16,7 +16,7 @@ def start(project_id: str, task_id: Optional[str] = typer.Argument(None)):
     with db.session() as session:
         output(
             model=Entry,
-            objs=engine.start(
+            objs=engine.timer_start(
                 session=session, project_id=project_id, task_id=task_id
             ),
         )
@@ -27,14 +27,14 @@ def stop():
     """Stop the timer."""
     with db.session() as session:
         output(
-            model=Entry, objs=engine.stop(session=session),
+            model=Entry, objs=engine.timer_stop(session=session),
         )
 
 
 def __output_status() -> int:
     """Output status and return number of lines printed."""
     with db.session() as session:
-        timer = engine.status(session=session)
+        timer = engine.timer_status(session=session)
         output(model=Entry, objs=timer)
         return 2 if timer is None else 6
 
@@ -69,7 +69,7 @@ def today():
     """See today's timers."""
     with db.session() as session:
         output(
-            model=Report, objs=engine.today(session=session),
+            model=Report, objs=engine.timer_today(session=session),
         )
 
 
@@ -81,5 +81,5 @@ def report(days: int = typer.Argument(default=0, min=0)):
     """
     with db.session() as session:
         output(
-            model=Report, objs=engine.report(session=session, days=days),
+            model=Report, objs=engine.timer_report(session=session, days=days),
         )

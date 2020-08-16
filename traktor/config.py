@@ -19,6 +19,7 @@ class ConfigKey(str, enum.Enum):
     prod_db_path = "prod_db_path"
     test_db_path = "test_db_path"
     use_test_db = "use_test_db"
+    url = "url"
 
 
 class Config:
@@ -40,6 +41,7 @@ class Config:
         self.prod_db_path = f"{self.config_dir}/traktor.db"
         self.test_db_path = f"{self.config_dir}/traktor-test.db"
         self.use_test_db = False
+        self.url = "http://127.0.0.1:5000"
 
         # Load the values from configuration file
         self.load()
@@ -77,6 +79,9 @@ class Config:
                 self.section, self.Key.use_test_db
             )
 
+        if cp.has_option(self.section, self.Key.url):
+            self.url = cp.get(self.section, self.Key.url)
+
     def save(self):
         # Create if it doesn't exist
         os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
@@ -94,6 +99,7 @@ class Config:
         cp.set(self.section, self.Key.prod_db_path, self.prod_db_path)
         cp.set(self.section, self.Key.test_db_path, self.test_db_path)
         cp.set(self.section, self.Key.use_test_db, str(self.use_test_db))
+        cp.set(self.section, self.Key.url, self.url)
 
         with io.open(self.config_path, "w") as f:
             cp.write(f)

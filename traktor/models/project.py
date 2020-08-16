@@ -1,5 +1,6 @@
 from typing import Optional
 
+import slugify
 from sqlalchemy import orm
 from pydantic import BaseModel, validator
 
@@ -37,8 +38,14 @@ class ProjectCreateRequest(BaseModel):
 
     @validator("color")
     def validate_color(cls, value):
+        if value is None:
+            return RGB().hex
         c = RGB(value)
         return c.hex
+
+    @property
+    def slug(self):
+        return slugify.slugify(self.name)
 
 
 class ProjectUpdateRequest(BaseModel):
@@ -47,5 +54,7 @@ class ProjectUpdateRequest(BaseModel):
 
     @validator("color")
     def validate_color(cls, value):
+        if value is None:
+            return None
         c = RGB(value)
         return c.hex

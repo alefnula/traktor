@@ -8,6 +8,8 @@
 - Timer commands are now top level commands.
 - Add support for switching between test and production database.
 - Add interactive status.
+- HTTP API added.
+- Client for the HTTP API created.
 
 
 ## v0.0.2 (August 09, 2020)

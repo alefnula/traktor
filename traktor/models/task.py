@@ -1,7 +1,11 @@
+from typing import Optional
+
+import slugify
 import sqlalchemy as sa
 from sqlalchemy import orm
+from pydantic import BaseModel, validator
 
-from traktor.models.model import Colored, Column, slugify_name
+from traktor.models.model import RGB, Colored, Column, slugify_name
 
 
 class Task(Colored):
@@ -22,9 +26,11 @@ class Task(Colored):
 
     slug = sa.Column(sa.String(255), nullable=False, default=slugify_name)
     project_id = sa.Column(
-        sa.String(36), sa.ForeignKey("project.id", ondelete="CASCADE")
+        sa.String(36),
+        sa.ForeignKey("project.id", ondelete="CASCADE"),
+        nullable=False,
     )
-    default = sa.Column(sa.Boolean, default=False)
+    default = sa.Column(sa.Boolean, default=False, nullable=False)
 
     # Relationships
     entries = orm.relationship(
@@ -42,3 +48,33 @@ class Task(Colored):
         )
 
     __repr__ = __str__
+
+
+class TaskCreateRequest(BaseModel):
+    name: str
+    color: Optional[str] = None
+    default: bool = False
+
+    @validator("color")
+    def validate_color(cls, value):
+        if value is None:
+            return RGB().hex
+        c = RGB(value)
+        return c.hex
+
+    @property
+    def slug(self):
+        return slugify.slugify(self.name)
+
+
+class TaskUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    color: Optional[str] = None
+    default: Optional[bool] = None
+
+    @validator("color")
+    def validate_color(cls, value):
+        if value is None:
+            return None
+        c = RGB(value)
+        return c.hex
