@@ -102,8 +102,8 @@ class Entry(Model):
         d = super().to_dict()
         d.update(
             {
-                "project": self.project.name,
-                "task": self.task.name,
+                "project": self.project.slug,
+                "task": self.task.slug,
                 "running_time": self.running_time,
             }
         )
