@@ -41,6 +41,6 @@ setup(
     install_requires=io.open("requirements.txt").read().splitlines(),
     entry_points="""
         [console_scripts]
-        traktor=traktor.commands:app
+        traktor=traktor.__main__:main
     """,
 )

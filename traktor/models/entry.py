@@ -1,99 +1,44 @@
-from typing import Optional
-from datetime import datetime
+from django.db import models
 
-import sqlalchemy as sa
-from sqlalchemy import orm
+from django_tea.table import Column
+from django_tea import timestamp as ts
+from django_tea.models import UUIDBaseModel
+from django_tea.models.mixins import TimestampedMixin, TimerMixin
 
-from traktor.config import config
-from traktor import timestamp as ts
-from traktor.models.model import Model, Column
-from traktor.models.entry_tag import entry_tag_table
+from traktor.models.project import Project
+from traktor.models.task import Task
 
 
-class Entry(Model):
-    HEADERS = Model.HEADERS + [
+class Entry(UUIDBaseModel, TimestampedMixin, TimerMixin):
+    HEADERS = [
         Column(title="Project", path="project.name"),
         Column(title="Task", path="task.name"),
         Column(
             title="Start Time",
-            path="local_start_time",
-            align=Column.Align.center,
+            path=lambda o: ts.time_to_local_str(o.start_time),
         ),
         Column(
-            title="End Time", path="local_end_time", align=Column.Align.center
+            title="End Time", path=lambda o: ts.time_to_local_str(o.end_time),
         ),
-        Column(
-            title="Duration", path="running_time", align=Column.Align.center
-        ),
+        Column(title="Duration", path="running_time"),
     ]
 
-    __tablename__ = "entry"
-
-    project_id = sa.Column(
-        sa.String(36),
-        sa.ForeignKey("project.id", ondelete="CASCADE"),
-        nullable=False,
+    project = models.ForeignKey(
+        Project, null=False, blank=False, on_delete=models.CASCADE
     )
-    task_id = sa.Column(
-        sa.String(36),
-        sa.ForeignKey("task.id", ondelete="CASCADE"),
-        nullable=False,
+    task = models.ForeignKey(
+        Task, null=True, blank=True, on_delete=models.SET_NULL
     )
-
-    description = sa.Column(sa.String(2047), nullable=False, default="")
-    notes = sa.Column(sa.String, nullable=False, default="")
-
-    # Timestamps
-    start_time = sa.Column(sa.DateTime, nullable=False, default=ts.utcnow)
-    end_time = sa.Column(sa.DateTime, nullable=True, default=None)
-    duration = sa.Column(sa.BigInteger, nullable=False, default=0)
-
-    @property
-    def local_start_time(self) -> str:
-        return ts.local_time(
-            ts.make_aware(self.start_time), config.timezone
-        ).strftime("%Y.%m.%d %H:%M:%S")
-
-    @property
-    def local_end_time(self) -> Optional[datetime]:
-        if self.end_time is None:
-            return None
-        return ts.local_time(
-            ts.make_aware(self.end_time), config.timezone
-        ).strftime("%Y.%m.%d %H:%M:%S")
-
-    @property
-    def running_time(self) -> str:
-        if self.end_time is not None:
-            end_time = ts.make_aware(self.end_time)
-        else:
-            end_time = ts.utcnow()
-
-        return ts.humanize(
-            int((end_time - ts.make_aware(self.start_time)).total_seconds())
-        )
-
-    def stop(self):
-        self.end_time = ts.utcnow()
-        self.duration = int(
-            (
-                ts.make_aware(self.end_time) - ts.make_aware(self.start_time)
-            ).total_seconds()
-        )
-
-    # Relationships
-    tags = orm.relationship(
-        "Tag",
-        secondary=entry_tag_table,
-        back_populates="entries",
-        cascade="all, delete",
-        passive_deletes=True,
+    description = models.CharField(
+        max_length=1023, null=False, blank=False, default=""
     )
+    notes = models.TextField(null=False, blank=False, default="")
 
     def __str__(self):
         return (
-            f"Task(project={self.project.name}, name={self.name}, "
-            f"color={self.color})"
+            f"Entry(project={self.project.slug}, "
+            f"task={self.task.slug if self.task is not None else None}, "
+            f"running_time={self.running_time})"
         )
 
     __repr__ = __str__
@@ -108,3 +53,6 @@ class Entry(Model):
             }
         )
         return d
+
+    class Meta:
+        app_label = "traktor"

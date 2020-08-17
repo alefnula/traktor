@@ -1,30 +1,30 @@
 from typing import Optional
 
 import typer
+from django_tea.console import output
 
-from traktor.output import output
-from traktor.models import RGB, Task
-from traktor.db.sync_db import sync_db as db
-from traktor.decorators import error_handler
-from traktor.engine import sync_engine as engine
+from traktor.models import Task
+from traktor.config import config
+from traktor.engine import engine
+from traktor.console import error_handler
 
 
 app = typer.Typer(name="task", help="Task commands.")
 
 
 # Make sure that the database exists and it's migrated to the latest version
-app.callback()(engine.ensure_db)
+app.callback()(engine.db.ensure)
 
 
 @app.command()
 @error_handler
 def list(project_id: Optional[str] = typer.Argument(None)):
     """List all tasks."""
-    with db.session() as session:
-        output(
-            model=Task,
-            objs=engine.task_list(session=session, project_id=project_id),
-        )
+    output(
+        fmt=config.format,
+        model=Task,
+        objs=engine.task_list(project_id=project_id),
+    )
 
 
 @app.command()
@@ -36,20 +36,13 @@ def add(
     default: Optional[bool] = None,
 ):
     """Create a task."""
-    if color is not None:
-        color = RGB(color)
-
-    with db.session() as session:
-        output(
-            model=Task,
-            objs=engine.task_create(
-                session=session,
-                project_id=project_id,
-                name=name,
-                color=color,
-                default=default,
-            ),
-        )
+    output(
+        fmt=config.format,
+        model=Task,
+        objs=engine.task_create(
+            project_id=project_id, name=name, color=color, default=default,
+        ),
+    )
 
 
 @app.command()
@@ -63,29 +56,22 @@ def update(
         None, help="Is this a default task."
     ),
 ):
-    """Update a project."""
-    if color is not None:
-        color = RGB(color)
-
-    with db.session() as session:
-        output(
-            model=Task,
-            objs=engine.task_update(
-                session=session,
-                project_id=project_id,
-                task_id=task_id,
-                name=name,
-                color=color,
-                default=default,
-            ),
-        )
+    """Update a task."""
+    output(
+        fmt=config.format,
+        model=Task,
+        objs=engine.task_update(
+            project_id=project_id,
+            task_id=task_id,
+            name=name,
+            color=color,
+            default=default,
+        ),
+    )
 
 
 @app.command()
 @error_handler
 def delete(project_id: str, task_id: str):
     """Delete a task."""
-    with db.session() as session:
-        engine.task_delete(
-            session=session, project_id=project_id, task_id=task_id
-        )
+    engine.task_delete(project_id=project_id, task_id=task_id)

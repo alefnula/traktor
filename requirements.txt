@@ -1,13 +1,8 @@
-aiosqlite==0.15.0
-alembic==1.4.2
-databases[sqlite]==0.3.2
-fastapi==0.61.0
+django==3.1
+django-tea==0.0.1
+djangorestframework==3.11.1
 httpx[http2]==0.14.1
 ipython==7.17.0
-python-slugify==4.0.1
 pytz==2020.1
-rich==5.1.0
-sqlalchemy==1.3.18
-typer==0.3.1
+typer==0.3.2
 tzlocal==2.1
-uvicorn==0.11.8

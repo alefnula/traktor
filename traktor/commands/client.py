@@ -119,43 +119,6 @@ def task_delete(project_id: str, task_id: str):
     return client.task_delete(project_id=project_id, task_id=task_id)
 
 
-# Tags
-
-
-@app.command()
-@aio
-def tag_list():
-    return client.tag_list()
-
-
-@app.command()
-@aio
-def tag_get(tag_id: str):
-    return client.tag_get(tag_id=tag_id)
-
-
-@app.command()
-@aio
-def tag_create(name: str, color: Optional[str] = models.RGB().hex):
-    return client.tag_create(models.TagCreateRequest(name=name, color=color))
-
-
-@app.command()
-@aio
-def tag_update(
-    tag_id: str, name: Optional[str] = None, color: Optional[str] = None
-):
-    return client.tag_update(
-        tag_id=tag_id, request=models.TagUpdateRequest(name=name, color=color)
-    )
-
-
-@app.command()
-@aio
-def tag_delete(tag_id: str):
-    return client.tag_delete(tag_id=tag_id)
-
-
 # Timer
 
 

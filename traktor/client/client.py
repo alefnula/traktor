@@ -57,23 +57,6 @@ class Client:
             f"/projects/{project_id}/tasks/{task_id}"
         )
 
-    # Tags
-
-    async def tag_list(self):
-        return await self.http.get("/tags/")
-
-    async def tag_create(self, request: models.TagCreateRequest):
-        return await self.http.post("/tags/", data=request.dict())
-
-    async def tag_get(self, tag_id: str):
-        return await self.http.get(f"/tags/{tag_id}/")
-
-    async def tag_update(self, tag_id: str, request: models.TagUpdateRequest):
-        return await self.http.patch(f"/tags/{tag_id}", data=request.dict())
-
-    async def tag_delete(self, tag_id: str):
-        return await self.http.delete(f"/tags/{tag_id}/")
-
     # Timer
 
     async def timer_start(

@@ -2,41 +2,35 @@ import time
 from typing import Optional
 
 import typer
+from django_tea.console import output
 
-from traktor.output import output
-from traktor.decorators import error_handler
+from traktor.config import config
+from traktor.engine import engine
+from traktor.console import error_handler
 from traktor.models import Entry, Report
-from traktor.db.sync_db import sync_db as db
-from traktor.engine import sync_engine as engine
 
 
 @error_handler
 def start(project_id: str, task_id: Optional[str] = typer.Argument(None)):
     """Start the timer."""
-    with db.session() as session:
-        output(
-            model=Entry,
-            objs=engine.timer_start(
-                session=session, project_id=project_id, task_id=task_id
-            ),
-        )
+    output(
+        fmt=config.format,
+        model=Entry,
+        objs=engine.timer_start(project_id=project_id, task_id=task_id),
+    )
 
 
 @error_handler
 def stop():
     """Stop the timer."""
-    with db.session() as session:
-        output(
-            model=Entry, objs=engine.timer_stop(session=session),
-        )
+    output(fmt=config.format, model=Entry, objs=engine.timer_stop())
 
 
 def __output_status() -> int:
     """Output status and return number of lines printed."""
-    with db.session() as session:
-        timer = engine.timer_status(session=session)
-        output(model=Entry, objs=timer)
-        return 2 if timer is None else 6
+    timer = engine.timer_status()
+    output(fmt=config.format, model=Entry, objs=timer)
+    return 2 if timer is None else 6
 
 
 @error_handler
@@ -67,10 +61,7 @@ def status(
 @error_handler
 def today():
     """See today's timers."""
-    with db.session() as session:
-        output(
-            model=Report, objs=engine.timer_today(session=session),
-        )
+    output(fmt=config.format, model=Report, objs=engine.timer_today())
 
 
 @error_handler
@@ -79,7 +70,6 @@ def report(days: int = typer.Argument(default=0, min=0)):
 
     If days is 0 that means whole history.
     """
-    with db.session() as session:
-        output(
-            model=Report, objs=engine.timer_report(session=session, days=days),
-        )
+    output(
+        fmt=config.format, model=Report, objs=engine.timer_report(days=days)
+    )

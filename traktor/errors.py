@@ -16,22 +16,10 @@ class TraktorError(Exception):
 
 
 class InvalidConfiguration(TraktorError):
-    def __init__(
-        self, key: str = None, value: str = None, valid_values: str = None
-    ):
-        if key is not None and value is not None:
-            message = f"Invalid configuration key=`{key}` and value=`{value}`."
-        elif key is not None:
-            message = f"Invalid configuration key=`{key}`."
-        elif value is not None:
-            message = f"Invalid configuration value=`{value}`."
-        else:
-            message = "Invalid configuration."
-
-        if valid_values is not None:
-            message += f" Valid values: `{valid_values}`"
-
-        super().__init__(message=message)
+    def __init__(self, key: str, value: str, error: Exception):
+        super().__init__(
+            message=f"Error setting '{key}' to '{value}'. Error: {error}"
+        )
 
 
 def query_to_string(query: Optional[dict]) -> str:
@@ -52,7 +40,7 @@ class ObjectAlreadyExists(TraktorError):
 
         super().__init__(
             message=(
-                f"{model.class_name()}{query_to_string(self.query)} "
+                f"{model.class_name}{query_to_string(self.query)} "
                 f"already exists."
             )
         )
@@ -71,7 +59,7 @@ class ObjectNotFound(TraktorError):
 
         super().__init__(
             message=(
-                f"{model.class_name()}{query_to_string(self.query)} not found."
+                f"{model.class_name}{query_to_string(self.query)} not found."
             )
         )
 
@@ -89,7 +77,7 @@ class MultipleObjectsFound(TraktorError):
 
         super().__init__(
             message=(
-                f"{model.class_name()}{query_to_string(self.query)} "
+                f"{model.class_name}{query_to_string(self.query)} "
                 f"multiple objects found."
             )
         )

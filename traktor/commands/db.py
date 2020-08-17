@@ -1,41 +1,17 @@
 from pathlib import Path
 
-import typer
+from django_tea.commands.db import app
 
-from traktor.db.sync_db import sync_db as db
-from traktor.engine import sync_engine as engine
-
-
-app = typer.Typer(name="db", help="Database commands.", hidden=True)
+from traktor.engine import engine
 
 
-@app.command()
-def revision(name: str):
-    """Create a new migration."""
-    engine.db_revision(revision=name)
-
-
-@app.command()
-def migrate(revision: str = typer.Argument(default="head")):
-    """Run migrations."""
-    engine.db_migrate(revision=revision)
-
-
-@app.command()
-def reset():
-    """Reset migrations - delete all tables."""
-    engine.db_reset()
-
-
-@app.command()
+@app.command(name="export")
 def export(path: Path):
     """Export database to JSON document."""
-    with db.session() as session:
-        engine.export(session=session, path=path)
+    engine.db.export(path=path)
 
 
-@app.command()
+@app.command(name="import")
 def load(path: Path):
     """Import database export from JSON document."""
-    with db.session() as session:
-        engine.load(session=session, path=path)
+    engine.db.load(path=path)

@@ -1,35 +1,37 @@
+import typer
 from pathlib import Path
 
-import typer
+from django_tea import commands
+from django_tea.enums import ConsoleFormat
 
-from traktor.config import Format, config
-from traktor.commands import timer
-from traktor.commands.db import app as db_app
+from traktor.config import config
 from traktor.commands.config import app as config_app
 from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
-from traktor.commands.tag import app as tag_app
-from traktor.commands.server import app as server_app
-from traktor.commands.client import app as client_app
+from traktor.commands import timer
 
 
-app = typer.Typer()
+app = typer.Typer(name="traktor", help="Personal time tracking.")
 
-# Add timer commands
+
+# Add django_tea subcommands
+app.add_typer(commands.auth_app)
+app.add_typer(commands.django_app)
+app.add_typer(commands.server_app)
+app.add_typer(commands.test_app)
+app.add_typer(commands.db_app)
+
+# Add traktor subcommands
+app.add_typer(config_app)
+app.add_typer(project_app)
+app.add_typer(task_app)
+
+# Add timer commands as top level
 app.command()(timer.start)
 app.command()(timer.stop)
 app.command()(timer.status)
 app.command()(timer.today)
 app.command()(timer.report)
-
-# Add other apps
-app.add_typer(db_app)
-app.add_typer(config_app)
-app.add_typer(project_app)
-app.add_typer(task_app)
-app.add_typer(tag_app)
-app.add_typer(server_app)
-app.add_typer(client_app)
 
 
 @app.callback()
@@ -44,18 +46,8 @@ def callback(
         readable=True,
         resolve_path=True,
     ),
-    format: Format = typer.Option(
-        default=config.format.value, help="Output format"
-    ),
-    db_path: Path = typer.Option(
-        default=config.db_path,
-        help="Path to the database.",
-        exists=False,
-        file_okay=True,
-        dir_okay=False,
-        writable=True,
-        readable=True,
-        resolve_path=True,
+    fmt: ConsoleFormat = typer.Option(
+        config.format.value, "--format", help="Output format"
     ),
 ):
     if config_path is not None:
@@ -63,11 +55,8 @@ def callback(
 
     config.load()
 
-    if config.format != format:
-        config.format = format
-
-    if config.db_path != str(db_path.absolute()):
-        config.db_path = str(db_path.absolute())
+    if config.format != fmt:
+        config.format = fmt
 
 
 @app.command(hidden=True)
@@ -76,27 +65,15 @@ def shell():
     try:
         from IPython import embed
         from traktor.config import config
-        from traktor.engine import sync_engine
-        from traktor.db.sync_db import sync_db
-        from traktor.models import (
-            Sort,
-            RGB,
-            Project,
-            Task,
-            Tag,
-            Entry,
-        )
+        from traktor.engine import engine
+        from traktor.models import Project, Task, Entry
 
         embed(
             user_ns={
                 "config": config,
-                "db": sync_db,
-                "engine": sync_engine,
-                "Sort": Sort,
-                "RGB": RGB,
+                "engine": engine,
                 "Project": Project,
                 "Task": Task,
-                "Tag": Tag,
                 "Entry": Entry,
             },
             colors="neutral",

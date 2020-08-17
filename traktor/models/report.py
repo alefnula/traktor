@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
-from traktor.timestamp import humanize
-from traktor.models.model import VanillaModel, Column
+from django_tea.table import Column
+from django_tea import timestamp as ts
+from django_tea.models import VanillaModel
 
 
 @dataclass
@@ -22,12 +23,12 @@ class Report(VanillaModel):
 
     @property
     def humanized_time(self):
-        return humanize(self.duration)
+        return ts.humanize(self.duration)
 
     def to_dict(self) -> dict:
         return {
             "project": self.project,
             "task": self.task,
             "duration": self.duration,
-            "running_time": humanize(self.duration),
+            "running_time": ts.humanize(self.duration),
         }
