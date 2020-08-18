@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from traktor import errors
+from django_tea import errors
+
 from traktor.models import Project
 
 

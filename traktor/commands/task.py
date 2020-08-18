@@ -1,12 +1,10 @@
 from typing import Optional
 
 import typer
-from django_tea.console import output
+from django_tea.console import command
 
 from traktor.models import Task
-from traktor.config import config
 from traktor.engine import engine
-from traktor.console import error_handler
 
 
 app = typer.Typer(name="task", help="Task commands.")
@@ -16,19 +14,13 @@ app = typer.Typer(name="task", help="Task commands.")
 app.callback()(engine.db.ensure)
 
 
-@app.command()
-@error_handler
-def list(project_id: Optional[str] = typer.Argument(None)):
+@command(app, model=Task, name="list")
+def list_tasks(project_id: Optional[str] = typer.Argument(None)):
     """List all tasks."""
-    output(
-        fmt=config.format,
-        model=Task,
-        objs=engine.task_list(project_id=project_id),
-    )
+    return engine.task_list(project_id=project_id)
 
 
-@app.command()
-@error_handler
+@command(app, model=Task)
 def add(
     project_id: str,
     name: str,
@@ -36,17 +28,12 @@ def add(
     default: Optional[bool] = None,
 ):
     """Create a task."""
-    output(
-        fmt=config.format,
-        model=Task,
-        objs=engine.task_create(
-            project_id=project_id, name=name, color=color, default=default,
-        ),
+    return engine.task_create(
+        project_id=project_id, name=name, color=color, default=default,
     )
 
 
-@app.command()
-@error_handler
+@command(app, model=Task)
 def update(
     project_id: str,
     task_id: str,
@@ -57,21 +44,16 @@ def update(
     ),
 ):
     """Update a task."""
-    output(
-        fmt=config.format,
-        model=Task,
-        objs=engine.task_update(
-            project_id=project_id,
-            task_id=task_id,
-            name=name,
-            color=color,
-            default=default,
-        ),
+    return engine.task_update(
+        project_id=project_id,
+        task_id=task_id,
+        name=name,
+        color=color,
+        default=default,
     )
 
 
-@app.command()
-@error_handler
+@command(app)
 def delete(project_id: str, task_id: str):
     """Delete a task."""
     engine.task_delete(project_id=project_id, task_id=task_id)
