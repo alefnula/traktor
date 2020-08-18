@@ -1,12 +1,9 @@
 from pathlib import Path
 
-from django_tea.enums import ConsoleFormat
 from django_tea.config import ConfigField, Config as TeaConfig
 
 
 class Config(TeaConfig):
-    Format = ConsoleFormat
-
     ENTRIES = {
         **TeaConfig.ENTRIES,
         "prod_db_path": ConfigField(section="database", option="prod_db_path"),
