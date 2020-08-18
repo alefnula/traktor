@@ -5,6 +5,7 @@ from django_tea import commands
 from django_tea.enums import ConsoleFormat
 
 from traktor.config import config
+from traktor.commands.db import app as db_app
 from traktor.commands.config import app as config_app
 from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
@@ -19,9 +20,9 @@ app.add_typer(commands.auth_app)
 app.add_typer(commands.django_app)
 app.add_typer(commands.server_app)
 app.add_typer(commands.test_app)
-app.add_typer(commands.db_app)
 
 # Add traktor subcommands
+app.add_typer(db_app)
 app.add_typer(config_app)
 app.add_typer(project_app)
 app.add_typer(task_app)
