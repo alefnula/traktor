@@ -27,10 +27,17 @@ def main():
 
     django.setup()
 
-    # Run the application
-    from traktor.commands import app
+    args = sys.argv[:]
+    # Check if it's a django manage command and run it
+    if len(args) >= 2 and args[0].endswith("traktor") and args[1] == "manage":
+        from django.core.management import execute_from_command_line
 
-    app()
+        execute_from_command_line(args[:1] + args[2:])
+    # If not run the application
+    else:
+        from traktor.commands import app
+
+        app()
 
 
 if __name__ == "__main__":

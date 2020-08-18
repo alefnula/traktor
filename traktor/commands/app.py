@@ -1,7 +1,6 @@
 import typer
 from pathlib import Path
 
-from django_tea import commands
 from django_tea.enums import ConsoleFormat
 
 from traktor.config import config
@@ -14,12 +13,6 @@ from traktor.commands import timer
 
 app = typer.Typer(name="traktor", help="Personal time tracking.")
 
-
-# Add django_tea subcommands
-app.add_typer(commands.auth_app)
-app.add_typer(commands.django_app)
-app.add_typer(commands.server_app)
-app.add_typer(commands.test_app)
 
 # Add traktor subcommands
 app.add_typer(db_app)
