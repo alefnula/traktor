@@ -15,27 +15,27 @@ app.callback()(engine.db.ensure)
 
 
 @command(app, model=Task, name="list")
-def list_tasks(project_id: Optional[str] = typer.Argument(None)):
+def list_tasks(project: Optional[str] = typer.Argument(None)):
     """List all tasks."""
-    return engine.task_list(project_id=project_id)
+    return engine.task_list(project_id=project)
 
 
 @command(app, model=Task)
 def add(
-    project_id: str,
+    project: str,
     name: str,
     color: Optional[str] = None,
     default: Optional[bool] = None,
 ):
     """Create a task."""
     return engine.task_create(
-        project_id=project_id, name=name, color=color, default=default,
+        project_id=project, name=name, color=color, default=default,
     )
 
 
 @command(app, model=Task)
 def update(
-    project_id: str,
+    project: str,
     task_id: str,
     name: Optional[str] = typer.Option(None, help="New task name."),
     color: Optional[str] = typer.Option(None, help="New task color"),
@@ -45,7 +45,7 @@ def update(
 ):
     """Update a task."""
     return engine.task_update(
-        project_id=project_id,
+        project_id=project,
         task_id=task_id,
         name=name,
         color=color,
@@ -54,6 +54,6 @@ def update(
 
 
 @command(app)
-def delete(project_id: str, task_id: str):
+def delete(project: str, task: str):
     """Delete a task."""
-    engine.task_delete(project_id=project_id, task_id=task_id)
+    engine.task_delete(project_id=project, task_id=task)

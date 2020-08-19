@@ -28,15 +28,15 @@ def add(name: str, color: Optional[str] = None):
 
 @command(app, model=Project)
 def update(
-    project_id: str,
+    project: str,
     name: Optional[str] = typer.Option(None, help="New project name."),
     color: Optional[str] = typer.Option(None, help="New project color"),
 ):
     """Update a project."""
-    return engine.project_update(project_id=project_id, name=name, color=color)
+    return engine.project_update(project_id=project, name=name, color=color)
 
 
 @command(app)
-def delete(project_id: str):
+def delete(project: str):
     """Delete a project."""
-    engine.project_delete(project_id=project_id)
+    engine.project_delete(project_id=project)

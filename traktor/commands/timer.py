@@ -9,9 +9,9 @@ from traktor.config import config
 from traktor.engine import engine
 
 
-def start(project_id: str, task_id: Optional[str] = typer.Argument(None)):
+def start(project: str, task: Optional[str] = typer.Argument(None)):
     """Start the timer."""
-    return engine.timer_start(project_id=project_id, task_id=task_id)
+    return engine.timer_start(project_id=project, task_id=task)
 
 
 def stop():
