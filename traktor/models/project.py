@@ -22,7 +22,7 @@ class Project(UUIDBaseModel, ColoredMixin, UniqueSlugMixin, TimestampedMixin):
         return self.rich(self.name)
 
     def __str__(self):
-        return f"{self.class_name}({self.name})"
+        return f"{self.name}"
 
     __repr__ = __str__
 

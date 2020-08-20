@@ -30,9 +30,9 @@ class Entry(UUIDBaseModel, TimestampedMixin, TimerMixin):
         Task, null=True, blank=True, on_delete=models.SET_NULL
     )
     description = models.CharField(
-        max_length=1023, null=False, blank=False, default=""
+        max_length=1023, null=False, blank=True, default=""
     )
-    notes = models.TextField(null=False, blank=False, default="")
+    notes = models.TextField(null=False, blank=True, default="")
 
     def __str__(self):
         return (

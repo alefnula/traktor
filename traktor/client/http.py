@@ -30,11 +30,11 @@ class HttpClient:
         """Initialize.
 
         Args:
-            url (str): URL to the SotaBench server.
-            token (str): SotaBench authentication token.
+            url (str): URL to the Traktor server.
+            token (str): Traktor authentication token.
             timeout (int): Request timeout time.
         """
-        self.url = f"{url.rstrip('/')}/api/v0"
+        self.url = f"http://{url.rstrip('/')}/api/v0"
         self.token = token
         self.timeout = timeout
 
@@ -45,7 +45,7 @@ class HttpClient:
 
         self.response = None
 
-    async def request(
+    def request(
         self, method, url, headers=None, params=None, data=None, timeout=None
     ):
         """Request method.
@@ -67,18 +67,18 @@ class HttpClient:
         timeout = timeout or self.timeout
 
         try:
-            async with httpx.AsyncClient(
+            with httpx.Client(
                 base_url=self.url, headers=self.headers
             ) as client:
                 if method.lower() == "get":
-                    self.response = await client.get(
+                    self.response = client.get(
                         url=url,
                         headers=headers,
                         params=params,
                         timeout=timeout,
                     )
                 elif method.lower() == "patch":
-                    self.response = await client.patch(
+                    self.response = client.patch(
                         url=url,
                         headers=headers,
                         params=params,
@@ -86,7 +86,7 @@ class HttpClient:
                         timeout=timeout,
                     )
                 elif method.lower() == "post":
-                    self.response = await client.post(
+                    self.response = client.post(
                         url=url,
                         headers=headers,
                         params=params,
@@ -94,7 +94,7 @@ class HttpClient:
                         timeout=timeout,
                     )
                 elif method.lower() == "delete":
-                    self.response = await client.delete(
+                    self.response = client.delete(
                         url=url,
                         headers=headers,
                         params=params,
@@ -156,7 +156,7 @@ class HttpClient:
             message = "Unknown error."
         raise HttpClientError(message, response=self.response)
 
-    async def get(self, url, headers=None, params=None, timeout=None):
+    def get(self, url, headers=None, params=None, timeout=None):
         """Perform get request.
 
         Args:
@@ -170,7 +170,7 @@ class HttpClient:
             dict: Deserialized json response.
 
         """
-        return await self.request(
+        return self.request(
             method="get",
             url=url,
             headers=headers,
@@ -178,9 +178,7 @@ class HttpClient:
             timeout=timeout,
         )
 
-    async def patch(
-        self, url, headers=None, params=None, data=None, timeout=None
-    ):
+    def patch(self, url, headers=None, params=None, data=None, timeout=None):
         """Perform patch request.
 
         Args:
@@ -196,7 +194,7 @@ class HttpClient:
             dict: Deserialized json response.
 
         """
-        return await self.request(
+        return self.request(
             method="patch",
             url=url,
             headers=headers,
@@ -205,9 +203,7 @@ class HttpClient:
             timeout=timeout,
         )
 
-    async def post(
-        self, url, headers=None, params=None, data=None, timeout=None
-    ):
+    def post(self, url, headers=None, params=None, data=None, timeout=None):
         """Perform post request.
 
         Args:
@@ -223,7 +219,7 @@ class HttpClient:
             dict: Deserialized json response.
 
         """
-        return await self.request(
+        return self.request(
             method="post",
             url=url,
             headers=headers,
@@ -232,7 +228,7 @@ class HttpClient:
             timeout=timeout,
         )
 
-    async def delete(self, url, headers=None, params=None, timeout=None):
+    def delete(self, url, headers=None, params=None, timeout=None):
         """Perform delete request.
 
         Args:
@@ -245,7 +241,7 @@ class HttpClient:
         Returns:
             dict: Deserialized json response.
         """
-        return await self.request(
+        return self.request(
             method="delete",
             url=url,
             headers=headers,

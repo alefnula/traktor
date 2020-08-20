@@ -11,7 +11,7 @@ class Config(TeaConfig):
         "use_test_db": ConfigField(
             section="database", option="use_test_db", type=bool
         ),
-        "url": ConfigField(section="server", option="url"),
+        "server_url": ConfigField(section="server", option="url"),
     }
 
     def __init__(self):
@@ -22,11 +22,13 @@ class Config(TeaConfig):
         # Directory structure
         self.module_dir = Path(__file__).parent.absolute()
 
-        # Configuration
+        # Database
         self.prod_db_path = f"{self.config_dir}/traktor.db"
         self.test_db_path = f"{self.config_dir}/traktor-test.db"
         self.use_test_db = False
-        self.url = "http://127.0.0.1:5000"
+
+        # Server
+        self.server_url = "127.0.0.1:5000"
 
         # Load the values from configuration file
         self.load()

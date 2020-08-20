@@ -1,9 +1,12 @@
 from pathlib import Path
 
-from django_tea.commands.db import app
+import typer
 from django_tea.console import command
 
 from traktor.engine import engine
+
+
+app = typer.Typer(name="db", help="Database export/import.")
 
 
 @command(app, name="export")

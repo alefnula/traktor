@@ -1,11 +1,21 @@
 __all__ = [
     "ProjectSerializer",
+    "ProjectCreateSerializer",
+    "ProjectUpdateSerializer",
     "TaskSerializer",
+    "TaskCreateSerializer",
+    "TaskUpdateSerializer",
     "EntrySerializer",
     "ReportSerializer",
 ]
 
-from traktor.serializers.project import ProjectSerializer
-from traktor.serializers.task import TaskSerializer
-from traktor.serializers.entry import EntrySerializer
-from traktor.serializers.report import ReportSerializer
+from traktor.serializers.serializers import (
+    ProjectSerializer,
+    ProjectCreateSerializer,
+    ProjectUpdateSerializer,
+    TaskSerializer,
+    TaskCreateSerializer,
+    TaskUpdateSerializer,
+    EntrySerializer,
+    ReportSerializer,
+)

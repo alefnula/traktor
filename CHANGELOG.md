@@ -11,6 +11,9 @@
 - Add interactive status.
 - HTTP API added.
 - Client for the HTTP API created.
+- Rewrite in django.
+- Admin interface added.
+- Client is synchronous now.
 
 
 ## v0.0.2 (August 09, 2020)

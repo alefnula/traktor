@@ -10,7 +10,7 @@ class Report(VanillaModel):
     HEADERS = VanillaModel.HEADERS + [
         Column(title="Project", path="project"),
         Column(title="Task", path="task"),
-        Column(title="Time", path="humanized_time", align=Column.Align.center),
+        Column(title="Time", path="running_time", align=Column.Align.center),
     ]
 
     project: str
@@ -22,7 +22,7 @@ class Report(VanillaModel):
         return f"{self.project}-{self.task}"
 
     @property
-    def humanized_time(self):
+    def running_time(self):
         return ts.humanize(self.duration)
 
     def to_dict(self) -> dict:
