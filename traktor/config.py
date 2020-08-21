@@ -12,6 +12,9 @@ class Config(TeaConfig):
             section="database", option="use_test_db", type=bool
         ),
         "server_url": ConfigField(section="server", option="url"),
+        "server_workers": ConfigField(
+            section="server", option="workers", type=int
+        ),
     }
 
     def __init__(self):
@@ -29,6 +32,7 @@ class Config(TeaConfig):
 
         # Server
         self.server_url = "127.0.0.1:5000"
+        self.server_workers = 2
 
         # Load the values from configuration file
         self.load()

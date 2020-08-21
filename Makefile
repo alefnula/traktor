@@ -33,3 +33,10 @@ build:               ## Build the source and wheel distribution packages.
 release: build       ## Build and upload the package to PyPI.
 	@twine upload --skip-existing  dist/*
 	@rm -fr build dist sotabenchapi.egg-info
+
+
+deploy:             ## Deploy the application
+	@pip install -U -r requirements.txt
+	@sudo cp config/traktor.service /etc/systemd/system/traktor.service
+	@sudo enable traktor
+	@sudo restart traktor

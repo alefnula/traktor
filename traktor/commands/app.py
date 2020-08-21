@@ -62,10 +62,41 @@ def callback(
 
 @app.command()
 def runserver():
-    """Run IPython shell with loaded configuration and models."""
+    """Run development server."""
     from django.core.management import execute_from_command_line
 
     execute_from_command_line(["traktor", "runserver", config.server_url])
+
+
+@app.command()
+def gunicorn():
+    """Run gunicorn server."""
+    from gunicorn.app import base
+    from traktor.wsgi import application
+
+    class TraktorApplication(base.BaseApplication):
+        def __init__(self, app, options=None):
+            self.options = options or {}
+            self.application = app
+            super().__init__()
+
+        def load_config(self):
+            config_dict = {
+                key: value
+                for key, value in self.options.items()
+                if key in self.cfg.settings and value is not None
+            }
+            for key, value in config_dict.items():
+                self.cfg.set(key.lower(), value)
+
+        def load(self):
+            return self.application
+
+    options = {
+        "bind": config.server_url,
+        "workers": config.server_workers,
+    }
+    TraktorApplication(application, options).run()
 
 
 @app.command(hidden=True)
