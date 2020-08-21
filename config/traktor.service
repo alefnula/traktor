@@ -1,14 +1,18 @@
 [Unit]
 Description=Traktor Server
+
+Wants=network.target
 After=network.target
-StartLimitIntervalSec=0
 
 [Service]
-Type=simple
-Restart=always
-RestartSec=1
+ExecStart=/home/pi/projects/envs/traktor/bin/traktor gunicorn
+WorkingDirectory=/home/pi/projects/traktor
 User=pi
-ExecStart=/home/pi/projects/env/traktor/bin/traktor gunicorn
+Group=pi
+Type=simple
+Restart=on-failure
+PIDFile=/var/run/traktor.pid
+
 
 [Install]
 WantedBy=multi-user.target

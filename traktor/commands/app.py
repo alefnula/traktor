@@ -72,12 +72,12 @@ def runserver():
 def gunicorn():
     """Run gunicorn server."""
     from gunicorn.app import base
-    from traktor.wsgi import application
+    from traktor import wsgi
 
     class TraktorApplication(base.BaseApplication):
-        def __init__(self, app, options=None):
-            self.options = options or {}
-            self.application = app
+        def __init__(self, application, **kwargs):
+            self.options = kwargs
+            self.application = application
             super().__init__()
 
         def load_config(self):
@@ -89,14 +89,17 @@ def gunicorn():
             for key, value in config_dict.items():
                 self.cfg.set(key.lower(), value)
 
+        def init(self, parser, opts, args):
+            pass
+
         def load(self):
             return self.application
 
     options = {
-        "bind": config.server_url,
+        "bind": f"0.0.0.0:{config.server_port}",
         "workers": config.server_workers,
     }
-    TraktorApplication(application, options).run()
+    TraktorApplication(wsgi.application, **options).run()
 
 
 @app.command(hidden=True)

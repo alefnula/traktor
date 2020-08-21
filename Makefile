@@ -38,5 +38,5 @@ release: build       ## Build and upload the package to PyPI.
 deploy:             ## Deploy the application
 	@pip install -U -r requirements.txt
 	@sudo cp config/traktor.service /etc/systemd/system/traktor.service
-	@sudo enable traktor
-	@sudo restart traktor
+	@sudo systemctl enable traktor
+	@sudo systemctl restart traktor

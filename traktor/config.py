@@ -11,7 +11,8 @@ class Config(TeaConfig):
         "use_test_db": ConfigField(
             section="database", option="use_test_db", type=bool
         ),
-        "server_url": ConfigField(section="server", option="url"),
+        "server_host": ConfigField(section="server", option="host"),
+        "server_port": ConfigField(section="server", option="port", type=int),
         "server_workers": ConfigField(
             section="server", option="workers", type=int
         ),
@@ -31,11 +32,16 @@ class Config(TeaConfig):
         self.use_test_db = False
 
         # Server
-        self.server_url = "127.0.0.1:5000"
+        self.server_host = "127.0.0.1"
+        self.server_port = 5000
         self.server_workers = 2
 
         # Load the values from configuration file
         self.load()
+
+    @property
+    def server_url(self):
+        return f"{self.server_host}:{self.server_port}"
 
     @property
     def db_path(self):
