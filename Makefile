@@ -1,4 +1,4 @@
-.PHONY: help clean test check fmt build release
+.PHONY: help clean test check fmt build release deploy restart
 .DEFAULT_GOAL := help
 PROJECT := traktor
 
@@ -39,4 +39,8 @@ deploy:             ## Deploy the application
 	@pip install -U -r requirements.txt
 	@sudo cp config/traktor.service /etc/systemd/system/traktor.service
 	@sudo systemctl enable traktor
+	@sudo systemctl restart traktor
+
+
+restart:            ## Restart the system service.
 	@sudo systemctl restart traktor
