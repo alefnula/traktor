@@ -1,8 +1,7 @@
 django==3.1
-django-tea==0.0.1
+django-tea==0.0.2
 djangorestframework==3.11.1
 gunicorn==20.0.4
-httpx[http2]==0.14.1
 ipython==7.17.0
 pytz==2020.1
 typer==0.3.2

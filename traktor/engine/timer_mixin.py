@@ -44,7 +44,10 @@ class TimerMixin(TaskMixin):
 
     @staticmethod
     def timer_status() -> Optional[Entry]:
-        return Entry.objects.filter(end_time=None).first()
+        entry = Entry.objects.filter(end_time=None).first()
+        if entry is None:
+            raise errors.TimerIsNotRunning()
+        return entry
 
     @staticmethod
     def _make_report(entries: List[Entry]) -> List[Report]:

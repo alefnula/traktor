@@ -9,6 +9,10 @@ from rest_framework.exceptions import (
     ValidationError,
 )
 
+from django_tea import errors as tea_errors
+
+from traktor import errors
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +47,15 @@ def traktor_exception_handler(exc, context):
     if isinstance(exc, (NotAuthenticated, AuthenticationFailed)):
         data = {"error": str(exc)}
         status = http_statuses.HTTP_401_UNAUTHORIZED
-    elif isinstance(exc, (ObjectDoesNotExist, Http404)):
+    elif isinstance(
+        exc,
+        (
+            ObjectDoesNotExist,
+            Http404,
+            tea_errors.ObjectNotFound,
+            errors.TimerIsNotRunning,
+        ),
+    ):
         data = {"error": str(exc)}
         status = http_statuses.HTTP_404_NOT_FOUND
     elif isinstance(exc, ValidationError):

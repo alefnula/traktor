@@ -64,16 +64,12 @@ class ProjectGetUpdateDelete(APIView):
         project = engine.project_get(project_id=project_id)
         serializer = ProjectUpdateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            return engine.project_update(project.id, **serializer.data)
+            return engine.project_update(project.slug, **serializer.data)
 
     def delete(self, request: Request, project_id: str):
         """Delete a project."""
-        if engine.project_delete(project_id=project_id):
-            return Response(status=204, data={"detail": "OK"})
-        else:
-            return Response(
-                status=500, data={"errors": ["Project could not be deleted."]}
-            )
+        engine.project_delete(project_id=project_id)
+        return Response(status=204, data={"detail": "OK"})
 
 
 # Task
@@ -110,12 +106,8 @@ class TaskGetUpdateDelete(APIView):
 
     def delete(self, request: Request, project_id: str, task_id: str):
         """Delete a task."""
-        if engine.task_delete(project_id=project_id, task_id=task_id):
-            return Response(status=204, data={"detail": "OK"})
-        else:
-            return Response(
-                status=500, data={"error": "Task could not be deleted."}
-            )
+        engine.task_delete(project_id=project_id, task_id=task_id)
+        return Response(status=204, data={"detail": "OK"})
 
 
 # Timer

@@ -9,7 +9,6 @@ from traktor.config import config
 from traktor.commands.db import app as db_app
 from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
-from traktor.commands.client import app as client_app
 from traktor.commands import timer
 from traktor.models import Entry, Report
 
@@ -24,7 +23,6 @@ app.add_typer(commands.config_app)
 app.add_typer(db_app)
 app.add_typer(project_app)
 app.add_typer(task_app)
-app.add_typer(client_app)
 
 
 # Add timer commands as top level
