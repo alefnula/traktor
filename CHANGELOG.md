@@ -14,6 +14,7 @@
 - Rewrite in django.
 - Admin interface added.
 - Client is synchronous now.
+- Extract server component to traktor-server project.
 
 
 ## v0.0.2 (August 09, 2020)

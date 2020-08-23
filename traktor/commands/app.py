@@ -1,9 +1,9 @@
 import typer
 from pathlib import Path
 
-from django_tea import commands
 from console_tea.console import command
 from console_tea.enums import ConsoleFormat
+from console_tea.commands.config import app as config_app
 
 from traktor.config import config
 from traktor.commands.db import app as db_app
@@ -17,7 +17,7 @@ app = typer.Typer(name="traktor", help="Personal time tracking.")
 
 
 # Add tea subcommands
-app.add_typer(commands.config_app)
+app.add_typer(config_app)
 
 # Add traktor subcommands
 app.add_typer(db_app)
@@ -56,48 +56,6 @@ def callback(
 
     if config.format != fmt:
         config.format = fmt
-
-
-@app.command()
-def runserver():
-    """Run development server."""
-    from django.core.management import execute_from_command_line
-
-    execute_from_command_line(["traktor", "runserver", config.server_url])
-
-
-@app.command()
-def gunicorn():
-    """Run gunicorn server."""
-    from gunicorn.app import base
-    from traktor import wsgi
-
-    class TraktorApplication(base.BaseApplication):
-        def __init__(self, application, **kwargs):
-            self.options = kwargs
-            self.application = application
-            super().__init__()
-
-        def load_config(self):
-            config_dict = {
-                key: value
-                for key, value in self.options.items()
-                if key in self.cfg.settings and value is not None
-            }
-            for key, value in config_dict.items():
-                self.cfg.set(key.lower(), value)
-
-        def init(self, parser, opts, args):
-            pass
-
-        def load(self):
-            return self.application
-
-    options = {
-        "bind": f"0.0.0.0:{config.server_port}",
-        "workers": config.server_workers,
-    }
-    TraktorApplication(wsgi.application, **options).run()
 
 
 @app.command(hidden=True)

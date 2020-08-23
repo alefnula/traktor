@@ -11,9 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-from datetime import timedelta
 
-from traktor import log
 from traktor.config import config
 
 
@@ -29,52 +27,15 @@ SECRET_KEY = config.secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.debug
 
-ALLOWED_HOSTS = [config.server_host]
-
 
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "rest_framework",
+    "django.contrib.auth",
     "django_tea",
     "traktor",
 ]
-
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
-
-ROOT_URLCONF = "traktor.urls"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = "traktor.wsgi.application"
 
 
 # Database
@@ -124,44 +85,3 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-LOGGING = log.create_logging_configuration(
-    log_dir=config.log_dir, hosted=not config.debug
-)
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-STATIC_URL = "/static/"
-
-# Rest Framework
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated"
-    ],
-    "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
-    "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",
-    ],
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ],
-    "EXCEPTION_HANDLER": (
-        "traktor.exception_handler.traktor_exception_handler"
-    ),
-}
-
-JWT_AUTH = {
-    "JWT_SECRET_KEY": SECRET_KEY,
-    "JWT_ALGORITHM": "HS256",
-    "JWT_VERIFY": True,
-    "JWT_VERIFY_EXPIRATION": True,
-    "JWT_EXPIRATION_DELTA": timedelta(days=7),
-    "JWT_ALLOW_REFRESH": True,
-    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=30),
-}
