@@ -65,12 +65,13 @@ def shell():
         from IPython import embed
         from traktor.config import config
         from traktor.engine import engine
-        from traktor.models import Project, Task, Entry
+        from traktor.models import User, Project, Task, Entry
 
         embed(
             user_ns={
                 "config": config,
                 "engine": engine,
+                "User": User,
                 "Project": Project,
                 "Task": Task,
                 "Entry": Entry,
