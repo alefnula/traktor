@@ -1,23 +1,36 @@
+import typer
 from pathlib import Path
 
-import typer
+from console_tea.console import command
+from console_tea.enums import ConsoleFormat
+from console_tea.commands.config import app as config_app
 
-from traktor.config import Format, config
+from traktor.config import config
 from traktor.commands.db import app as db_app
-from traktor.commands.config import app as config_app
 from traktor.commands.project import app as project_app
 from traktor.commands.task import app as task_app
-from traktor.commands.tag import app as tag_app
-from traktor.commands.timer import app as timer_app
+from traktor.commands import timer
+from traktor.models import Entry, Report
 
 
-app = typer.Typer()
-app.add_typer(db_app)
+app = typer.Typer(name="traktor", help="Personal time tracking.")
+
+
+# Add tea subcommands
 app.add_typer(config_app)
+
+# Add traktor subcommands
+app.add_typer(db_app)
 app.add_typer(project_app)
 app.add_typer(task_app)
-app.add_typer(tag_app)
-app.add_typer(timer_app)
+
+
+# Add timer commands as top level
+command(app)(timer.status)
+command(app, model=Entry)(timer.start)
+command(app, model=Entry)(timer.stop)
+command(app, model=Report)(timer.today)
+command(app, model=Report)(timer.report)
 
 
 @app.callback()
@@ -32,18 +45,8 @@ def callback(
         readable=True,
         resolve_path=True,
     ),
-    format: Format = typer.Option(
-        default=config.format.value, help="Output format"
-    ),
-    db_path: Path = typer.Option(
-        default=config.db_path,
-        help="Path to the database.",
-        exists=False,
-        file_okay=True,
-        dir_okay=False,
-        writable=True,
-        readable=True,
-        resolve_path=True,
+    fmt: ConsoleFormat = typer.Option(
+        config.format.value, "--format", help="Output format"
     ),
 ):
     if config_path is not None:
@@ -51,30 +54,26 @@ def callback(
 
     config.load()
 
-    if config.format != format:
-        config.format = format
-
-    if config.db_path != str(db_path.absolute()):
-        config.db_path = str(db_path.absolute())
+    if config.format != fmt:
+        config.format = fmt
 
 
-@app.command()
+@app.command(hidden=True)
 def shell():
     """Run IPython shell with loaded configuration and models."""
     try:
         from IPython import embed
         from traktor.config import config
-        from traktor.models import db, Sort, RGB, Project, Task, Tag, Entry
+        from traktor.engine import engine
+        from traktor.models import User, Project, Task, Entry
 
         embed(
             user_ns={
                 "config": config,
-                "db": db,
-                "Sort": Sort,
-                "RGB": RGB,
+                "engine": engine,
+                "User": User,
                 "Project": Project,
                 "Task": Task,
-                "Tag": Tag,
                 "Entry": Entry,
             },
             colors="neutral",

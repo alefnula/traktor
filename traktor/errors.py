@@ -1,74 +1,29 @@
-from typing import Type
+from django_tea import errors
 
 
-class TraktorError(Exception):
-    def __init__(self, message: str):
-        self.message = message
-
-    @property
-    def class_name(self):
-        return self.__class__.__name__
-
-    def __str__(self):
-        return f"{self.class_name}({self.message})"
-
-    __repr__ = __str__
-
-
-class InvalidConfiguration(TraktorError):
-    def __init__(
-        self, key: str = None, value: str = None, valid_values: str = None
-    ):
-        if key is not None and value is not None:
-            message = f"Invalid configuration key=`{key}` and value=`{value}`."
-        elif key is not None:
-            message = f"Invalid configuration key=`{key}`."
-        elif value is not None:
-            message = f"Invalid configuration value=`{value}`."
-        else:
-            message = "Invalid configuration."
-
-        if valid_values is not None:
-            message += f" Valid values: `{valid_values}`"
-
-        super().__init__(message=message)
-
-
-class ObjectNotFound(TraktorError):
-    def __init__(self, model: Type, query: dict):
-        """DeviceNotFound error.
-
-        Args:
-            model: Model class.
-            query: Query dictionary.
-        """
-        self.model = model
-        self.query = query
-
-        if len(query) == 0:
-            query_string = ""
-        else:
-            query_string = (
-                "("
-                + ", ".join(f"{key}={value}" for key, value in query.items())
-                + ")"
-            )
-        super().__init__(
-            message=f"{model.class_name()}{query_string} not found."
-        )
+class TraktorError(errors.DjangoTeaError):
+    pass
 
 
 class TimerAlreadyRunning(TraktorError):
-    def __init__(self, timers: list):
-        self.timers = timers
+    def __init__(self, project_id: str, task_id: str):
+        self.project_id = project_id
+        self.task_id = task_id
 
-        super().__init__(message="Timer is already running.",)
+        super().__init__(
+            message=f"Timer is already running for {project_id}/{task_id}."
+        )
+
+
+class TimerIsNotRunning(TraktorError):
+    def __init__(self):
+        super().__init__(message="Timer is not running.")
 
 
 class NoDefaultTask(TraktorError):
-    def __init__(self, project: str):
-        self.project = project
+    def __init__(self, project_id: str):
+        self.project_id = project_id
 
         super().__init__(
-            message=f"No default task found for project: {project}."
+            message=f"No default task found for project: {project_id}."
         )

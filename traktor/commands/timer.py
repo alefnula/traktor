@@ -1,67 +1,63 @@
+import time
 from typing import Optional
 
 import typer
+from console_tea.console import output
 
-from traktor import errors
+from traktor.models import Entry
+from traktor.config import config
 from traktor.engine import engine
-from traktor.output import output
-from traktor.decorators import error_handler
-from traktor.models import db, Entry, Report
 
 
-app = typer.Typer(name="timer", help="Start/stop timer and reports.")
-
-
-@app.command()
-@error_handler
 def start(project: str, task: Optional[str] = typer.Argument(None)):
     """Start the timer."""
-    with db.session() as session:
-        try:
-            output(
-                model=Entry,
-                objs=engine.start(session=session, project=project, task=task),
-            )
-        except errors.TimerAlreadyRunning as e:
-            typer.secho(e.message, fg=typer.colors.RED)
-            output(model=Entry, objs=e.timers)
+    return engine.timer_start(project_id=project, task_id=task)
 
 
-@app.command()
-@error_handler
 def stop():
     """Stop the timer."""
-    with db.session() as session:
-        output(
-            model=Entry, objs=engine.stop(session=session),
-        )
+    return engine.timer_stop()
 
 
-@app.command()
-@error_handler
-def status():
+def __output_status() -> int:
+    """Output status and return number of lines printed."""
+    timer = engine.timer_status()
+    output(fmt=config.format, model=Entry, objs=timer)
+    return 2 if timer is None else 6
+
+
+def status(
+    interactive: bool = typer.Option(
+        False, "-i", "--interactive", help="Show status in interactive mode."
+    )
+):
     """See the current running timer."""
-    with db.session() as session:
-        output(
-            model=Entry, objs=engine.status(session=session),
-        )
+    if interactive:
+        no_lines = 0
+        while True:
+            try:
+                if no_lines > 0:
+                    print("\033[F" * no_lines)
+                    for _ in range(no_lines - 1):
+                        print("\033[K")
+                    print("\033[F" * no_lines)
+
+                no_lines = __output_status()
+                time.sleep(1)
+            except KeyboardInterrupt:
+                return
+    else:
+        __output_status()
 
 
-@app.command()
-@error_handler
 def today():
     """See today's timers."""
-    with db.session() as session:
-        output(
-            model=Report, objs=engine.today(session=session),
-        )
+    return engine.timer_today()
 
 
-@app.command()
-@error_handler
-def report(days: int = typer.Argument(default=365, min=1)):
-    """See the current running timer."""
-    with db.session() as session:
-        output(
-            model=Report, objs=engine.report(session=session, days=days),
-        )
+def report(days: int = typer.Argument(default=0, min=0)):
+    """See the current running timer.
+
+    If days is 0 that means whole history.
+    """
+    return engine.timer_report(days=days)

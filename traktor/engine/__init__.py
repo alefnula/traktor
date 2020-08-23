@@ -1,3 +1,3 @@
-__all__ = ["Engine", "engine"]
+__all__ = ["engine"]
 
-from traktor.engine.engine import Engine, engine
+from traktor.engine.engine import engine

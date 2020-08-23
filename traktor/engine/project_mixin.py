@@ -1,57 +1,51 @@
 from typing import List, Optional
 
+from django_tea import errors
 
-from sqlalchemy import orm
-
-from traktor import errors
-from traktor.models import DB, RGB, Project
+from traktor.models import Project
 
 
 class ProjectMixin:
     @staticmethod
-    def project_list(session: orm.Session) -> List[Project]:
-        return DB.all(session=session, model=Project)
+    def project_list() -> List[Project]:
+        return list(Project.objects.all())
 
     @staticmethod
-    def project_get(session: orm.Session, name: str) -> Project:
-        return DB.get(
-            session=session, model=Project, filters=[Project.name == name]
-        )
+    def project_get(project_id: str) -> Project:
+        try:
+            return Project.get_by_slug(slug=project_id)
+        except Project.DoesNotExist:
+            raise errors.ObjectNotFound(
+                model=Project, query={"project_id": project_id}
+            )
 
     @classmethod
-    def project_get_or_create(
-        cls, session: orm.Session, name: str, color: Optional[RGB] = None
-    ) -> Project:
+    def project_create(cls, name: str, color: Optional[str] = None) -> Project:
         try:
-            project = cls.project_get(session=session, name=name)
-            if color is not None:
-                if project.color != color:
-                    project.color = color
-                    DB.save(session=session, obj=project)
-        except errors.ObjectNotFound:
-            project = Project(name=name, color_hex=(color or RGB()).hex)
-            DB.save(session=session, obj=project)
-
-        return project
+            Project.get_by_slug_field(value=name)
+            raise errors.ObjectAlreadyExists(
+                model=Project, query={"name": name}
+            )
+        except Project.DoesNotExist:
+            return Project.objects.create(
+                name=name, color=color or Project.color.field.default
+            )
 
     @classmethod
     def project_update(
-        cls,
-        session: orm.Session,
-        project: str,
-        name: Optional[str],
-        color: Optional[RGB],
+        cls, project_id: str, name: Optional[str], color: Optional[str],
     ) -> Project:
-        project = cls.project_get(session=session, name=project)
+        project = cls.project_get(project_id=project_id)
         # Change name
         if name is not None:
             project.name = name
         # Change color
         if color is not None:
             project.color = color
-        DB.save(session, obj=project)
+        project.save()
         return project
 
     @classmethod
-    def project_delete(cls, session: orm.Session, project: Project):
-        DB.delete(session=session, obj=project)
+    def project_delete(cls, project_id: str):
+        project = cls.project_get(project_id=project_id)
+        project.delete()

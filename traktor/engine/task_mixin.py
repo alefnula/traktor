@@ -1,118 +1,108 @@
 from typing import List, Optional
 
-from sqlalchemy import orm
+from django_tea import errors
 
-from traktor import errors
-from traktor.models import DB, RGB, Task
+from traktor.models import Project, Task
 from traktor.engine.project_mixin import ProjectMixin
 
 
 class TaskMixin(ProjectMixin):
     @classmethod
-    def task_list(cls, session: orm.Session, project: str) -> List[Task]:
+    def task_list(cls, project_id: Optional[str]) -> List[Task]:
         """List all tasks in a project.
 
         Args:
-            session (orm.Session): SQLAlchemy session.
-            project (str): Project name.
+            project_id (str): Project slug.
         """
-        project = cls.project_get(session=session, name=project)
+        if project_id is None:
+            query = Task.objects.all()
+        else:
+            query = Task.objects.filter(project__slug=project_id)
 
-        return DB.filter(
-            session=session,
-            model=Task,
-            filters=[Task.project_id == project.id],
-        )
-
-    @classmethod
-    def task_get(cls, session: orm.Session, project: str, name: str) -> Task:
-        project = cls.project_get(session=session, name=project)
-        return DB.get(
-            session=session,
-            model=Task,
-            filters=[Task.project_id == project.id, Task.name == name],
-        )
+        return list(query)
 
     @classmethod
-    def task_get_default(
-        cls, session: orm.Session, project: str
-    ) -> Optional[Task]:
-        project = cls.project_get(session=session, name=project)
-        return DB.first(
-            session=session,
-            model=Task,
-            filters=[Task.project_id == project.id, Task.default.is_(True)],
-        )
+    def task_get(cls, project_id: str, task_id: str) -> Task:
+        try:
+            return Task.get_by_slug(slug=task_id, project__slug=project_id)
+        except Task.DoesNotExist:
+            raise errors.ObjectNotFound(
+                model=Task,
+                query={"project_id": project_id, "task_id": task_id},
+            )
+
+    @classmethod
+    def task_get_default(cls, project_id: str) -> Optional[Task]:
+        try:
+            return Task.objects.get(project__slug=project_id, default=True)
+        except Task.DoesNotExist:
+            raise errors.ObjectNotFound(
+                model=Task, query={"project_id": project_id, "default": True}
+            )
 
     @staticmethod
-    def __set_default_task(session: orm.Session, task: Task, default: bool):
+    def __set_default_task(task: Task, default: bool):
         if default:
             # If the default value for a new task or task update is set to
             # `True` we must first find the previous default task and set it
             # default to `False`.
-            old_default = DB.first(
-                session=session,
-                model=Task,
-                filters=[
-                    Task.project_id == task.project_id,
-                    Task.default.is_(True),
-                ],
-            )
-            if old_default is not None:
-                old_default.default = False
-                DB.save(session=session, obj=old_default)
+            try:
+                old_default = Task.objects.get(
+                    project=task.project, default=True
+                )
+                # If it's not the same task
+                if old_default.pk != task.pk:
+                    old_default.default = False
+                    old_default.save()
+            except Task.DoesNotExist:
+                # All OK!
+                pass
 
             # Now set the new task to be default
             task.default = True
-            DB.save(session=session, obj=task)
+            task.save()
         else:
             # It's just a non default task
             task.default = False
-            DB.save(session=session, obj=task)
+            task.save()
 
     @classmethod
-    def task_get_or_create(
+    def task_create(
         cls,
-        session: orm.Session,
-        project: str,
+        project_id: str,
         name: str,
-        color: Optional[RGB] = None,
+        color: Optional[str] = None,
         default: Optional[bool] = None,
     ) -> Task:
-        project = cls.project_get(session=session, name=project)
+        project = Project.get_by_slug(slug=project_id)
         try:
-            task = cls.task_get(
-                session=session, project=project.name, name=name
+            Task.get_by_slug_field(value=name, project__slug=project_id)
+            raise errors.ObjectAlreadyExists(
+                Task, query={"project_id": project.slug, "name": name}
             )
-            if color is not None:
-                if Task.color != color:
-                    task.color = color
-                    DB.save(session=session, obj=task)
-
-        except errors.ObjectNotFound:
-            task = Task(
-                project_id=project.id,
+        except Task.DoesNotExist:
+            task = Task.objects.create(
+                project=project,
                 name=name,
-                color_hex=(color or RGB()).hex,
+                color=color or Task.color.field.default,
             )
-            DB.save(session=session, obj=task)
+            task.save()
 
         if default is not None:
-            cls.__set_default_task(session=session, task=task, default=default)
+            cls.__set_default_task(task=task, default=default)
 
         return task
 
     @classmethod
     def task_update(
         cls,
-        session: orm.Session,
-        project: str,
-        task: str,
+        project_id: str,
+        task_id: str,
         name: Optional[str],
-        color: Optional[RGB],
+        color: Optional[str],
         default: Optional[bool],
     ) -> Task:
-        task = cls.task_get(session=session, project=project, name=task)
+        task = cls.task_get(project_id=project_id, task_id=task_id)
         # Change name
         if name is not None:
             task.name = name
@@ -121,12 +111,11 @@ class TaskMixin(ProjectMixin):
             task.color = color
         # Change default
         if default is not None:
-            cls.__set_default_task(
-                session=session, task=task, default=default,
-            )
-        DB.save(session, obj=task)
+            cls.__set_default_task(task=task, default=default)
+        task.save()
         return task
 
-    @staticmethod
-    def task_delete(session: orm.Session, task: Task):
-        DB.delete(session=session, obj=task)
+    @classmethod
+    def task_delete(cls, project_id: str, task_id: str):
+        task = cls.task_get(project_id=project_id, task_id=task_id)
+        task.delete()

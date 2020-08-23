@@ -1,47 +1,30 @@
-import sqlalchemy as sa
-from sqlalchemy import orm
+from django.db import models
 
-from traktor.models.model import Colored, Column
+from console_tea.table import Column
+from django_tea.models import UUIDBaseModel
+from django_tea.models.mixins import (
+    ColoredMixin,
+    UniqueSlugMixin,
+    TimestampedMixin,
+)
 
 
-class Project(Colored):
-    HEADERS = Colored.HEADERS + [
-        Column(title="Name", path="name"),
-        Column(title="Color", path="rich_color", align=Column.Align.center),
+class Project(UUIDBaseModel, ColoredMixin, UniqueSlugMixin, TimestampedMixin):
+    HEADERS = [
+        Column(title="ID", path="slug"),
+        Column(title="Name", path="rich_name"),
     ]
 
-    __tablename__ = "project"
+    name = models.CharField(max_length=255)
 
-    name = sa.Column(sa.String(127), unique=True, nullable=False)
-
-    # Relationships
-    tasks = orm.relationship(
-        "Task",
-        backref="project",
-        order_by="asc(Task.name)",
-        cascade="all, delete",
-        passive_deletes=True,
-    )
-    entries = orm.relationship(
-        "Entry",
-        backref="project",
-        order_by="asc(Entry.start_time)",
-        cascade="all, delete",
-        passive_deletes=True,
-    )
+    @property
+    def rich_name(self) -> str:
+        return self.rich(self.name)
 
     def __str__(self):
-        return f"Project(name={self.name}, color={self.color_hex})"
+        return f"{self.name}"
 
     __repr__ = __str__
 
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d["name"] = self.name
-        return d
-
-    @classmethod
-    def from_dict(cls, d: dict) -> "Project":
-        model = super().from_dict(d)
-        model.name = d["name"]
-        return model
+    class Meta:
+        app_label = "traktor"

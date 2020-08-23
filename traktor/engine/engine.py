@@ -1,11 +1,9 @@
-from traktor.engine.tag_mixin import TagMixin
+from traktor.engine.db_engine import DBEngine
 from traktor.engine.timer_mixin import TimerMixin
-from traktor.engine.db_mixin import DBMixin
-from traktor.engine.config_mixin import ConfigMixin
 
 
-class Engine(TagMixin, TimerMixin, DBMixin, ConfigMixin):
-    pass
+class Engine(TimerMixin):
+    db = DBEngine()
 
 
 engine = Engine()

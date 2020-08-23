@@ -1,24 +1,21 @@
+from pathlib import Path
+
 import typer
+from console_tea.console import command
 
 from traktor.engine import engine
 
 
-app = typer.Typer(name="db", help="Database commands.")
+app = typer.Typer(name="db", help="Database export/import.")
 
 
-@app.command()
-def revision(name: str):
-    """Create a new migration."""
-    engine.db_revision(revision=name)
+@command(app, name="export")
+def export(path: Path):
+    """Export database to JSON document."""
+    engine.db.export(path=path)
 
 
-@app.command()
-def migrate(revision: str = typer.Argument(default="head")):
-    """Run migrations."""
-    engine.db_migrate(revision=revision)
-
-
-@app.command()
-def reset():
-    """Reset migrations - delete all tables."""
-    engine.db_reset()
+@command(app, name="import")
+def load(path: Path):
+    """Import database export from JSON document."""
+    engine.db.load(path=path)
