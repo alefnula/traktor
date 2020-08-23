@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import typer
-from django_tea.console import command
+from console_tea.console import command
 
 from traktor.engine import engine
 

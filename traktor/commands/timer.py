@@ -2,7 +2,7 @@ import time
 from typing import Optional
 
 import typer
-from django_tea.console import output
+from console_tea.console import output
 
 from traktor.models import Entry
 from traktor.config import config

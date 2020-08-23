@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from django_tea.table import Column
-from django_tea import timestamp as ts
+from tea import timestamp as ts
+from console_tea.table import Column
 from django_tea.models import VanillaModel
 
 

@@ -1,9 +1,14 @@
-from django.urls import path
+from django.urls import path, include
 
 from traktor.views.api.v0 import api
+from traktor.views.api.v0 import auth
 
 
 urlpatterns = [
+    # Auth
+    path("auth/token/", auth.ObtainToken.as_view()),
+    path("auth/token/refresh/", auth.RefreshToken.as_view()),
+    path("auth/", include("rest_framework.urls")),
     # Project
     path("projects/", api.ProjectListCreate.as_view()),
     path("projects/<slug:project_id>/", api.ProjectGetUpdateDelete.as_view()),

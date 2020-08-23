@@ -2,8 +2,8 @@ import typer
 from pathlib import Path
 
 from django_tea import commands
-from django_tea.console import command
-from django_tea.enums import ConsoleFormat
+from console_tea.console import command
+from console_tea.enums import ConsoleFormat
 
 from traktor.config import config
 from traktor.commands.db import app as db_app

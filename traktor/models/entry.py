@@ -1,7 +1,7 @@
 from django.db import models
 
-from django_tea.table import Column
-from django_tea import timestamp as ts
+from tea import timestamp as ts
+from console_tea.table import Column
 from django_tea.models import UUIDBaseModel
 from django_tea.models.mixins import TimestampedMixin, TimerMixin
 
@@ -15,10 +15,10 @@ class Entry(UUIDBaseModel, TimestampedMixin, TimerMixin):
         Column(title="Task", path="task.name"),
         Column(
             title="Start Time",
-            path=lambda o: ts.time_to_local_str(o.start_time),
+            path=lambda o: ts.to_localtime_str(o.start_time),
         ),
         Column(
-            title="End Time", path=lambda o: ts.time_to_local_str(o.end_time),
+            title="End Time", path=lambda o: ts.to_localtime_str(o.end_time),
         ),
         Column(title="Duration", path="running_time"),
     ]

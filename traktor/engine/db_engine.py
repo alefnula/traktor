@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 
-from django_tea import serde
+from tea import serde
 from django.core.management import execute_from_command_line
 
 from traktor.config import config
@@ -32,13 +32,13 @@ class DBEngine:
         data = json.loads(path.read_text(encoding="utf-8"))
 
         for d in data["projects"]:
-            project = serde.json_dict_to_model(model=Project, d=d)
+            project = Project.from_dict(d)
             project.save()
 
         for d in data["tasks"]:
-            task = serde.json_dict_to_model(model=Task, d=d)
+            task = Task.from_dict(d)
             task.save()
 
         for d in data["entries"]:
-            entry = serde.json_dict_to_model(model=Entry, d=d)
+            entry = Entry.from_dict(d)
             entry.save()

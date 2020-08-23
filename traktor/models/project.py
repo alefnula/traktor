@@ -1,6 +1,6 @@
 from django.db import models
 
-from django_tea.table import Column
+from console_tea.table import Column
 from django_tea.models import UUIDBaseModel
 from django_tea.models.mixins import (
     ColoredMixin,

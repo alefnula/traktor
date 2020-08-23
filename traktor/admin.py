@@ -1,6 +1,6 @@
 from django.contrib import admin
-
-from traktor.models import Project, Task, Entry
+from django.contrib.auth.admin import UserAdmin
+from traktor.models import User, Project, Task, Entry
 
 
 class ColoredMixin:
@@ -16,6 +16,9 @@ def name(s: str):
         return func
 
     return decorator
+
+
+admin.register(User)(UserAdmin)
 
 
 @admin.register(Project)

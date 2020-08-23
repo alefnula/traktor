@@ -6,6 +6,9 @@ __pycache__/
 *.ipynb
 .ipynb_checkpoints
 
+# Logs
+
+
 # Build artifacts
 traktor.egg-info
 build/
