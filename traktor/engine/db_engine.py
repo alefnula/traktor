@@ -12,7 +12,8 @@ from traktor.models import Project, Task, Entry
 class DBEngine:
     @staticmethod
     def ensure():
-        os.makedirs(os.path.dirname(config.db_path), exist_ok=True)
+        if config.db_engine == "sqlite3":
+            os.makedirs(os.path.dirname(config.db_name), exist_ok=True)
         execute_from_command_line(["traktor", "migrate", "-v", "0"])
 
     @staticmethod

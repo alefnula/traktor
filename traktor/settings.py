@@ -43,8 +43,12 @@ INSTALLED_APPS = [
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": config.db_path,
+        "ENGINE": f"django.db.backends.{config.db_engine}",
+        "NAME": config.db_name,
+        "USER": config.db_user,
+        "PASSWORD": config.db_password,
+        "HOST": config.db_host,
+        "PORT": config.db_port,
     }
 }
 

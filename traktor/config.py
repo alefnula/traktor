@@ -6,46 +6,29 @@ from django_tea.config import ConfigField, Config as TeaConfig
 class Config(TeaConfig):
     ENTRIES = {
         **TeaConfig.ENTRIES,
-        "prod_db_path": ConfigField(section="database", option="prod_db_path"),
-        "test_db_path": ConfigField(section="database", option="test_db_path"),
-        "use_test_db": ConfigField(
-            section="database", option="use_test_db", type=bool
-        ),
-        "server_host": ConfigField(section="server", option="host"),
-        "server_port": ConfigField(section="server", option="port", type=int),
-        "server_workers": ConfigField(
-            section="server", option="workers", type=int
-        ),
+        "db_engine": ConfigField(section="database", option="engine"),
+        "db_name": ConfigField(section="database", option="name"),
+        "db_user": ConfigField(section="database", option="user"),
+        "db_password": ConfigField(section="database", option="password"),
+        "db_host": ConfigField(section="database", option="host"),
+        "db_port": ConfigField(section="database", option="port", type=int),
     }
 
     def __init__(self):
         # Path to the configuration file
         self.config_dir = (Path("~").expanduser() / ".traktor").absolute()
-        super().__init__(config_file=self.config_dir / "traktor.ini")
-
         # Directory structure
         self.module_dir = Path(__file__).parent.absolute()
 
         # Database
-        self.prod_db_path = f"{self.config_dir}/traktor.db"
-        self.test_db_path = f"{self.config_dir}/traktor-test.db"
-        self.use_test_db = False
+        self.db_engine = "sqlite3"
+        self.db_name = f"{self.config_dir}/traktor.db"
+        self.db_user = None
+        self.db_password = None
+        self.db_host = None
+        self.db_port = None
 
-        # Server
-        self.server_host = "127.0.0.1"
-        self.server_port = 5000
-        self.server_workers = 2
-
-        # Load the values from configuration file
-        self.load()
-
-    @property
-    def server_url(self):
-        return f"{self.server_host}:{self.server_port}"
-
-    @property
-    def db_path(self):
-        return self.test_db_path if self.use_test_db else self.prod_db_path
+        super().__init__(config_file=self.config_dir / "traktor.ini")
 
 
 config = Config()
