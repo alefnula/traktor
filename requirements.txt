@@ -1,11 +1,5 @@
-django==3.1
-djangorestframework==3.11.1
-djangorestframework-jwt==1.11.0
-gunicorn==20.0.4
 ipython==7.17.0
-pytz==2020.1
-tea==0.1.1
-tea-console==0.0.3
-tea-django==0.0.5
+tea==0.1.2
+tea-console==0.0.4
+tea-django==0.0.6
 typer==0.3.2
-tzlocal==2.1
