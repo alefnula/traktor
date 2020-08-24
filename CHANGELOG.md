@@ -1,6 +1,12 @@
 # CHANGELOG
 
 
+## v0.0.6 (August 24, 2020)
+
+- Fixing requirements.
+
+---
+
 ## v0.0.5 (August 24, 2020)
 
 - Updated requirements.
