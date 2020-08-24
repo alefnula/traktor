@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.0.4 (August XX, 2020)
+## v0.0.4 (August 24, 2020)
 
 - Fixes.
 - TraktorConfig accepts config file location. Needed for application that

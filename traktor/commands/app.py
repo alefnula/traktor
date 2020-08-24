@@ -1,9 +1,9 @@
 import typer
 from pathlib import Path
 
-from console_tea.console import command
-from console_tea.enums import ConsoleFormat
-from console_tea.commands.config import app as config_app
+from tea_console.console import command
+from tea_console.enums import ConsoleFormat
+from tea_console.commands.config import app as config_app
 
 from traktor.config import config
 from traktor.commands.db import app as db_app

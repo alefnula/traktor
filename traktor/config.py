@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from django_tea.config import ConfigField, Config as TeaConfig
+from tea_django.config import ConfigField, Config as TeaConfig
 
 
 class Config(TeaConfig):

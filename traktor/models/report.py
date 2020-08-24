@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from tea import timestamp as ts
-from console_tea.table import Column
-from django_tea.models import VanillaModel
+from tea_console.table import Column
+from tea_django.models import VanillaModel
 
 
 @dataclass

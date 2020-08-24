@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.utils.timezone
-import django_tea.models.mixins.colored
+import tea_django.models.mixins.colored
 
 
 class Migration(migrations.Migration):
@@ -32,14 +32,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="project",
             name="color",
-            field=django_tea.models.mixins.colored.ColorField(
+            field=tea_django.models.mixins.colored.ColorField(
                 default="#FFFFFF", max_length=7
             ),
         ),
         migrations.AlterField(
             model_name="task",
             name="color",
-            field=django_tea.models.mixins.colored.ColorField(
+            field=tea_django.models.mixins.colored.ColorField(
                 default="#FFFFFF", max_length=7
             ),
         ),

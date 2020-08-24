@@ -33,7 +33,7 @@ DEBUG = config.debug
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
-    "django_tea",
+    "tea_django",
     "traktor",
 ]
 
