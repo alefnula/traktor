@@ -3,6 +3,9 @@
 ## v0.0.4 (August XX, 2020)
 
 - Fixes.
+- TraktorConfig accepts config file location. Needed for application that
+  will reuse it's configuration structure but in another file, like
+  `traktor-server`.
 
 
 ---
