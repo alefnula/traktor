@@ -1,6 +1,17 @@
 # CHANGELOG
 
-## v0.0.3
+## v0.0.4 (August 24, 2020)
+
+- Fixes.
+- TraktorConfig accepts config file location. Needed for application that
+  will reuse it's configuration structure but in another file, like
+  `traktor-server`.
+
+
+---
+
+
+## v0.0.3 (August 23, 2020)
 
 - Fix broken json output.
 - List all tasks without specifying the project.
@@ -17,12 +28,18 @@
 - Extract server component to traktor-server project.
 
 
+---
+
+
 ## v0.0.2 (August 09, 2020)
 
 - Fix missing alembic migrations in he package.
 - Add default task option. If the task is not provider on timer start the
   default task will be used.
 - Refactor.
+
+
+---
 
 
 ## v0.0.1 (August 09, 2020)

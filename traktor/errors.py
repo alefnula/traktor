@@ -1,4 +1,4 @@
-from django_tea import errors
+from tea_django import errors
 
 
 class TraktorError(errors.DjangoTeaError):

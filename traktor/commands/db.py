@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import typer
-from console_tea.console import command
+from tea_console.console import command
 
 from traktor.engine import engine
 

@@ -1,9 +1,9 @@
 from django.db import models
 
 from tea import timestamp as ts
-from console_tea.table import Column
-from django_tea.models import UUIDBaseModel
-from django_tea.models.mixins import TimestampedMixin, TimerMixin
+from tea_console.table import Column
+from tea_django.models import UUIDBaseModel
+from tea_django.models.mixins import TimestampedMixin, TimerMixin
 
 from traktor.models.project import Project
 from traktor.models.task import Task

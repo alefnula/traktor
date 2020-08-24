@@ -2,7 +2,7 @@ import time
 from typing import Optional
 
 import typer
-from console_tea.console import output
+from tea_console.console import output
 
 from traktor.models import Entry
 from traktor.config import config

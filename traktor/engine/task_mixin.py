@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from django_tea import errors
+from tea_django import errors
 
 from traktor.models import Project, Task
 from traktor.engine.project_mixin import ProjectMixin
