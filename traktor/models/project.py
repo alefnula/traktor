@@ -10,6 +10,11 @@ from tea_django.models.mixins import (
 from traktor.models.user import User
 
 
+class ProjectManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
+
+
 class Project(
     UUIDBaseModel, ColoredMixin, NonUniqueSlugMixin, TimestampedMixin
 ):
@@ -34,6 +39,8 @@ class Project(
         return f"{self.name}"
 
     __repr__ = __str__
+
+    objects = ProjectManager()
 
     class Meta:
         app_label = "traktor"
