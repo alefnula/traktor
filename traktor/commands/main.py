@@ -1,5 +1,6 @@
 import typer
 from pathlib import Path
+from typing import Optional
 
 from tea_console.console import command
 from tea_console.enums import ConsoleFormat
@@ -48,12 +49,18 @@ def callback(
     fmt: ConsoleFormat = typer.Option(
         config.format.value, "--format", help="Output format"
     ),
+    user: Optional[str] = typer.Option(
+        None, metavar="username", help="Optionally select different user."
+    ),
 ):
     if config_path is not None:
         config.config_path = config_path
 
     if config.format != fmt:
         config.format = fmt
+
+    if user is not None:
+        config.set_user(user)
 
 
 @app.command(hidden=True)

@@ -11,6 +11,11 @@ from tea_django.models.mixins import (
 from traktor.models.project import Project
 
 
+class TaskManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("project")
+
+
 class Task(UUIDBaseModel, ColoredMixin, NonUniqueSlugMixin, TimestampedMixin):
     HEADERS = [
         Column(title="Project ID", path="project.slug"),
@@ -33,6 +38,8 @@ class Task(UUIDBaseModel, ColoredMixin, NonUniqueSlugMixin, TimestampedMixin):
         return f"{self.project.name} / {self.name})"
 
     __repr__ = __str__
+
+    objects = TaskManager()
 
     class Meta:
         app_label = "traktor"

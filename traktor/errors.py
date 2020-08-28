@@ -21,9 +21,11 @@ class TimerIsNotRunning(TraktorError):
 
 
 class NoDefaultTask(TraktorError):
-    def __init__(self, project_id: str):
+    def __init__(self, user: str, project_id: str):
+        self.user = user
         self.project_id = project_id
 
         super().__init__(
-            message=f"No default task found for project: {project_id}."
+            message=f"No default task found for user: {user}, "
+            f"project: {project_id}."
         )

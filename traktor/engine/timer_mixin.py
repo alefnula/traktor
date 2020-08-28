@@ -1,11 +1,11 @@
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-from django.utils import timezone
-
+from tea import timestamp as ts
 
 from traktor import errors
-from traktor.models import Entry, Report
+from traktor.config import config
+from traktor.models import User, Entry, Report
 from traktor.engine.task_mixin import TaskMixin
 
 
@@ -17,24 +17,34 @@ class TimerMixin(TaskMixin):
         cls, project_id: str, task_id: Optional[str] = None
     ) -> Entry:
         # First see if there are running timers
-        entry = Entry.objects.filter(end_time=None).first()
+        user = User.objects.get(username=config.selected_user)
+        entry = Entry.objects.filter(
+            task__project__user=user, end_time=None
+        ).first()
         if entry is not None:
             raise errors.TimerAlreadyRunning(
-                project_id=entry.project.slug, task_id=entry.task.slug
+                project_id=entry.task.project.slug, task_id=entry.task.slug
             )
 
         if task_id is None:
-            task = cls.task_get_default(project_id=project_id)
+            task = cls.task_get_default(user=user, project_id=project_id)
             if task is None:
-                raise errors.NoDefaultTask(project_id=project_id)
+                raise errors.NoDefaultTask(
+                    user=user.username, project_id=project_id
+                )
         else:
-            task = cls.task_get(project_id=project_id, task_id=task_id)
+            task = cls.task_get(
+                user=user, project_id=project_id, task_id=task_id
+            )
 
-        return Entry.objects.create(project=task.project, task=task)
+        return Entry.objects.create(task=task)
 
     @staticmethod
     def timer_stop() -> Entry:
-        entry = Entry.objects.filter(end_time=None).first()
+        user = User.objects.get(username=config.selected_user)
+        entry = Entry.objects.filter(
+            task__project__user=user, end_time=None
+        ).first()
         if entry is None:
             raise errors.TimerIsNotRunning()
 
@@ -44,7 +54,10 @@ class TimerMixin(TaskMixin):
 
     @staticmethod
     def timer_status() -> Optional[Entry]:
-        entry = Entry.objects.filter(end_time=None).first()
+        user = User.objects.get(username=config.selected_user)
+        entry = Entry.objects.filter(
+            task__project__user=user, end_time=None
+        ).first()
         if entry is None:
             raise errors.TimerIsNotRunning()
         return entry
@@ -54,9 +67,12 @@ class TimerMixin(TaskMixin):
         reports = {}
         for entry in entries:
             report = Report(
-                project=entry.project.name,
+                project=entry.task.project.name,
                 task=entry.task.name,
-                duration=entry.duration,
+                duration=(
+                    entry.duration
+                    or int((ts.now() - entry.start_time).total_seconds())
+                ),
             )
             if report.key in reports:
                 reports[report.key].duration += report.duration
@@ -66,16 +82,24 @@ class TimerMixin(TaskMixin):
 
     @classmethod
     def timer_today(cls):
-        now = timezone.now()
-        today = timezone.make_aware(datetime(now.year, now.month, now.day))
-        return cls._make_report(Entry.objects.filter(start_time__gt=today))
+        user = User.objects.get(username=config.selected_user)
+        now = ts.now()
+        today = ts.make_aware(datetime(now.year, now.month, now.day))
+        return cls._make_report(
+            Entry.objects.filter(
+                task__project__user=user, start_time__gt=today
+            )
+        )
 
     @classmethod
     def timer_report(cls, days: int) -> List[Report]:
+        user = User.objects.get(username=config.selected_user)
         if days == 0:
-            entries = Entry.objects.all()
+            entries = Entry.objects.filter(task__project__user=user)
         else:
-            dt = timezone.now() - timedelta(days=days)
-            since = timezone.make_aware(datetime(dt.year, dt.month, dt.day))
-            entries = Entry.objects.filter(start_time__gt=since)
+            dt = ts.now() - timedelta(days=days)
+            since = ts.make_aware(datetime(dt.year, dt.month, dt.day))
+            entries = Entry.objects.filter(
+                task__project__user=user, start_time__gt=since
+            )
         return cls._make_report(entries)
