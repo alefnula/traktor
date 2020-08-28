@@ -4,24 +4,26 @@ from typing import Optional
 import typer
 from tea_console.console import output
 
-from traktor.models import Entry
 from traktor.config import config
 from traktor.engine import engine
+from traktor.models import User, Entry
 
 
 def start(project: str, task: Optional[str] = typer.Argument(None)):
     """Start the timer."""
-    return engine.timer_start(project_id=project, task_id=task)
+    user = User.objects.get(username=config.selected_user)
+    return engine.timer_start(user=user, project_id=project, task_id=task)
 
 
 def stop():
     """Stop the timer."""
-    return engine.timer_stop()
+    user = User.objects.get(username=config.selected_user)
+    return engine.timer_stop(user=user)
 
 
-def __output_status() -> int:
+def __output_status(user: User) -> int:
     """Output status and return number of lines printed."""
-    timer = engine.timer_status()
+    timer = engine.timer_status(user=user)
     output(fmt=config.format, model=Entry, objs=timer)
     return 2 if timer is None else 6
 
@@ -32,6 +34,7 @@ def status(
     )
 ):
     """See the current running timer."""
+    user = User.objects.get(username=config.selected_user)
     if interactive:
         no_lines = 0
         while True:
@@ -42,17 +45,18 @@ def status(
                         print("\033[K")
                     print("\033[F" * no_lines)
 
-                no_lines = __output_status()
+                no_lines = __output_status(user=user)
                 time.sleep(1)
             except KeyboardInterrupt:
                 return
     else:
-        __output_status()
+        __output_status(user=user)
 
 
 def today():
     """See today's timers."""
-    return engine.timer_today()
+    user = User.objects.get(username=config.selected_user)
+    return engine.timer_today(user=user)
 
 
 def report(days: int = typer.Argument(default=0, min=0)):
@@ -60,4 +64,5 @@ def report(days: int = typer.Argument(default=0, min=0)):
 
     If days is 0 that means whole history.
     """
-    return engine.timer_report(days=days)
+    user = User.objects.get(username=config.selected_user)
+    return engine.timer_report(user=user, days=days)

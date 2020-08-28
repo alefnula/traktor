@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from tea import timestamp as ts
 
 from traktor import errors
-from traktor.config import config
 from traktor.models import User, Entry, Report
 from traktor.engine.task_mixin import TaskMixin
 
@@ -14,10 +13,9 @@ class TimerMixin(TaskMixin):
 
     @classmethod
     def timer_start(
-        cls, project_id: str, task_id: Optional[str] = None
+        cls, user: User, project_id: str, task_id: Optional[str] = None
     ) -> Entry:
         # First see if there are running timers
-        user = User.objects.get(username=config.selected_user)
         entry = Entry.objects.filter(
             task__project__user=user, end_time=None
         ).first()
@@ -40,8 +38,7 @@ class TimerMixin(TaskMixin):
         return Entry.objects.create(task=task)
 
     @staticmethod
-    def timer_stop() -> Entry:
-        user = User.objects.get(username=config.selected_user)
+    def timer_stop(user: User) -> Entry:
         entry = Entry.objects.filter(
             task__project__user=user, end_time=None
         ).first()
@@ -53,8 +50,7 @@ class TimerMixin(TaskMixin):
         return entry
 
     @staticmethod
-    def timer_status() -> Optional[Entry]:
-        user = User.objects.get(username=config.selected_user)
+    def timer_status(user: User) -> Optional[Entry]:
         entry = Entry.objects.filter(
             task__project__user=user, end_time=None
         ).first()
@@ -81,8 +77,7 @@ class TimerMixin(TaskMixin):
         return list(reports.values())
 
     @classmethod
-    def timer_today(cls):
-        user = User.objects.get(username=config.selected_user)
+    def timer_today(cls, user: User):
         now = ts.now()
         today = ts.make_aware(datetime(now.year, now.month, now.day))
         return cls._make_report(
@@ -92,8 +87,7 @@ class TimerMixin(TaskMixin):
         )
 
     @classmethod
-    def timer_report(cls, days: int) -> List[Report]:
-        user = User.objects.get(username=config.selected_user)
+    def timer_report(cls, user: User, days: int = 0) -> List[Report]:
         if days == 0:
             entries = Entry.objects.filter(task__project__user=user)
         else:

@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.0.8 (August 28, 2020)
+
+- Misplaced stuff fix.
+
+
+---
+
+
 ## v0.0.7 (August 28, 2020)
 
 - Add user model and tie projects to user.
