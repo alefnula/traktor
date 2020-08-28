@@ -1,11 +1,24 @@
 # CHANGELOG
 
 
+## v0.0.7 (August 28, 2020)
+
+- Add user model and tie projects to user.
+- Prefetch related task and project on Task and Entry to generate less SQL
+  queries.
+- Default task creation on project creation.
+
+
+---
+
+
 ## v0.0.6 (August 24, 2020)
 
 - Fixing requirements.
 
+
 ---
+
 
 ## v0.0.5 (August 24, 2020)
 

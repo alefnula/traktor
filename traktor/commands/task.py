@@ -3,8 +3,9 @@ from typing import Optional
 import typer
 from tea_console.console import command
 
-from traktor.models import Task
+from traktor.config import config
 from traktor.engine import engine
+from traktor.models import User, Task
 
 
 app = typer.Typer(name="task", help="Task commands.")
@@ -17,7 +18,8 @@ app.callback()(engine.db.ensure)
 @command(app, model=Task, name="list")
 def list_tasks(project: Optional[str] = typer.Argument(None)):
     """List all tasks."""
-    return engine.task_list(project_id=project)
+    user = User.objects.get(username=config.selected_user)
+    return engine.task_list(user=user, project_id=project)
 
 
 @command(app, model=Task)
@@ -28,8 +30,9 @@ def add(
     default: Optional[bool] = None,
 ):
     """Create a task."""
+    user = User.objects.get(username=config.selected_user)
     return engine.task_create(
-        project_id=project, name=name, color=color, default=default,
+        user=user, project_id=project, name=name, color=color, default=default,
     )
 
 
@@ -44,7 +47,9 @@ def update(
     ),
 ):
     """Update a task."""
+    user = User.objects.get(username=config.selected_user)
     return engine.task_update(
+        user=user,
         project_id=project,
         task_id=task_id,
         name=name,
@@ -56,4 +61,5 @@ def update(
 @command(app)
 def delete(project: str, task: str):
     """Delete a task."""
-    engine.task_delete(project_id=project, task_id=task)
+    user = User.objects.get(username=config.selected_user)
+    engine.task_delete(user=user, project_id=project, task_id=task)

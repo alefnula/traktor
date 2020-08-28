@@ -4,17 +4,26 @@ from tea_console.table import Column
 from tea_django.models import UUIDBaseModel
 from tea_django.models.mixins import (
     ColoredMixin,
-    UniqueSlugMixin,
+    NonUniqueSlugMixin,
     TimestampedMixin,
 )
+from traktor.models.user import User
 
 
-class Project(UUIDBaseModel, ColoredMixin, UniqueSlugMixin, TimestampedMixin):
+class Project(
+    UUIDBaseModel, ColoredMixin, NonUniqueSlugMixin, TimestampedMixin
+):
     HEADERS = [
         Column(title="ID", path="slug"),
         Column(title="Name", path="rich_name"),
     ]
-
+    user = models.ForeignKey(
+        User,
+        null=False,
+        blank=False,
+        default=User.get_superuser_id,
+        on_delete=models.CASCADE,
+    )
     name = models.CharField(max_length=255)
 
     @property
@@ -28,3 +37,4 @@ class Project(UUIDBaseModel, ColoredMixin, UniqueSlugMixin, TimestampedMixin):
 
     class Meta:
         app_label = "traktor"
+        unique_together = ("user", "slug")

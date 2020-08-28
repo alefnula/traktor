@@ -2,40 +2,49 @@ from typing import List, Optional
 
 from tea_django import errors
 
-from traktor.models import Project
+from traktor.models import User, Project
 
 
 class ProjectMixin:
     @staticmethod
-    def project_list() -> List[Project]:
-        return list(Project.objects.all())
+    def project_list(user: User) -> List[Project]:
+        return list(Project.objects.filter(user=user))
 
     @staticmethod
-    def project_get(project_id: str) -> Project:
+    def project_get(user: User, project_id: str) -> Project:
         try:
-            return Project.get_by_slug(slug=project_id)
+            return Project.get_by_slug(slug=project_id, user=user)
         except Project.DoesNotExist:
             raise errors.ObjectNotFound(
-                model=Project, query={"project_id": project_id}
+                model=Project,
+                query={"user": user.username, "project_id": project_id},
             )
 
     @classmethod
-    def project_create(cls, name: str, color: Optional[str] = None) -> Project:
+    def project_create(
+        cls, user: User, name: str, color: Optional[str] = None
+    ) -> Project:
         try:
-            Project.get_by_slug_field(value=name)
+            Project.get_by_slug_field(value=name, user=user)
             raise errors.ObjectAlreadyExists(
-                model=Project, query={"name": name}
+                model=Project, query={"user": user.username, "name": name}
             )
         except Project.DoesNotExist:
             return Project.objects.create(
-                name=name, color=color or Project.color.field.default
+                user=user,
+                name=name,
+                color=color or Project.color.field.default,
             )
 
     @classmethod
     def project_update(
-        cls, project_id: str, name: Optional[str], color: Optional[str],
+        cls,
+        user: User,
+        project_id: str,
+        name: Optional[str],
+        color: Optional[str],
     ) -> Project:
-        project = cls.project_get(project_id=project_id)
+        project = cls.project_get(user=user, project_id=project_id)
         # Change name
         if name is not None:
             project.name = name
@@ -46,6 +55,6 @@ class ProjectMixin:
         return project
 
     @classmethod
-    def project_delete(cls, project_id: str):
-        project = cls.project_get(project_id=project_id)
+    def project_delete(cls, user: User, project_id: str):
+        project = cls.project_get(user=user, project_id=project_id)
         project.delete()

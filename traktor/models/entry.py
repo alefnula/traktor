@@ -5,13 +5,17 @@ from tea_console.table import Column
 from tea_django.models import UUIDBaseModel
 from tea_django.models.mixins import TimestampedMixin, TimerMixin
 
-from traktor.models.project import Project
 from traktor.models.task import Task
+
+
+class EntryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("task", "task__project")
 
 
 class Entry(UUIDBaseModel, TimestampedMixin, TimerMixin):
     HEADERS = [
-        Column(title="Project", path="project.name"),
+        Column(title="Project", path="task.project.name"),
         Column(title="Task", path="task.name"),
         Column(
             title="Start Time",
@@ -22,10 +26,6 @@ class Entry(UUIDBaseModel, TimestampedMixin, TimerMixin):
         ),
         Column(title="Duration", path="running_time"),
     ]
-
-    project = models.ForeignKey(
-        Project, null=False, blank=False, on_delete=models.CASCADE
-    )
     task = models.ForeignKey(
         Task, null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -36,7 +36,7 @@ class Entry(UUIDBaseModel, TimestampedMixin, TimerMixin):
 
     def __str__(self):
         return (
-            f"Entry(project={self.project.slug}, "
+            f"Entry(project={self.task.project.slug}, "
             f"task={self.task.slug if self.task is not None else None}, "
             f"running_time={self.running_time})"
         )
@@ -47,12 +47,14 @@ class Entry(UUIDBaseModel, TimestampedMixin, TimerMixin):
         d = super().to_dict()
         d.update(
             {
-                "project": self.project.slug,
+                "project": self.task.project.slug,
                 "task": self.task.slug,
                 "running_time": self.running_time,
             }
         )
         return d
+
+    objects = EntryManager()
 
     class Meta:
         app_label = "traktor"
