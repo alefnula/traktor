@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.0.9 (August XX, 2020)
+
+- Django admin fixes.
+- Add user field to Report model.
+
+
+---
+
+
 ## v0.0.8 (August 28, 2020)
 
 - Misplaced stuff fix.

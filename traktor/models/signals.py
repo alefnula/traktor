@@ -6,8 +6,12 @@ from traktor.models.task import Task
 
 
 @receiver(post_save, sender=Project)
-def create_default_task(sender, instance, **kwargs):
+def create_default_task(sender, instance, created, **kwargs):
     """Create default task for every project."""
-    Task.objects.create(
-        project=instance, name="Default", default=True, color=instance.color
-    )
+    if created:
+        Task.objects.create(
+            project=instance,
+            name="Default",
+            default=True,
+            color=instance.color,
+        )

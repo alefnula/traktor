@@ -63,6 +63,7 @@ class TimerMixin(TaskMixin):
         reports = {}
         for entry in entries:
             report = Report(
+                user=entry.task.project.user.username,
                 project=entry.task.project.name,
                 task=entry.task.name,
                 duration=(

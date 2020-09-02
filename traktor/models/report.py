@@ -8,11 +8,13 @@ from tea_django.models import VanillaModel
 @dataclass
 class Report(VanillaModel):
     HEADERS = VanillaModel.HEADERS + [
+        Column(title="User", path="user"),
         Column(title="Project", path="project"),
         Column(title="Task", path="task"),
         Column(title="Time", path="running_time", align=Column.Align.center),
     ]
 
+    user: str
     project: str
     task: str
     duration: int
@@ -27,6 +29,7 @@ class Report(VanillaModel):
 
     def to_dict(self) -> dict:
         return {
+            "user": self.user,
             "project": self.project,
             "task": self.task,
             "duration": self.duration,
