@@ -1,7 +1,15 @@
 # CHANGELOG
 
 
-## v0.0.9 (August XX, 2020)
+## v0.0.10 (September 02, 2020)
+
+- `tea-console` and `tea-django` update.
+
+
+---
+
+
+## v0.0.9 (September 02, 2020)
 
 - Django admin fixes.
 - Add user field to Report model.
