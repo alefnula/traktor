@@ -1,6 +1,6 @@
-django~=3.1
-ipython~=7.18.0
-tea-console~=0.0.4
-tea-django~=0.0.8
+django~=3.1.1
+ipython~=7.18.1
+tea-console~=0.0.5
+tea-django~=0.0.11
 tea~=0.1.2
 typer~=0.3.2
